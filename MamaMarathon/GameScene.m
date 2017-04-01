@@ -15,6 +15,7 @@
     CGFloat screenWidth;
     CGFloat screenHeight;
     CGSize screenCell;
+    CGFloat HUDheightProperty;
     
     //for update method
     NSTimeInterval _lastUpdateTimeInterval;
@@ -50,6 +51,7 @@
 
     //create main HUD node
     CGFloat HUDheight = screenHeight / 6 * 1.2;
+    HUDheightProperty = HUDheight;
     
     SKSpriteNode *HUDnode = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor] size:CGSizeMake(screenWidth, HUDheight)];
     HUDnode.anchorPoint = CGPointZero;
@@ -75,8 +77,7 @@
 
 - (void)addBackgrounds{
 
-#warning высота бэкграунда должна зависеть от высоты HUD'a
-    CGSize backgroundSize = CGSizeMake(screenWidth, screenHeight);
+    CGSize backgroundSize = CGSizeMake(screenWidth, screenHeight - HUDheightProperty);
     
     //FIRST BACKGROUND
     Background *firstBackground = [Background generateNewBackground];
@@ -91,7 +92,7 @@
     //SECOND BACKGROUND
     Background *secondBackground = [Background generateNewBackground];
     secondBackground.size = backgroundSize;
-    secondBackground.position = CGPointMake(0, firstBackground.position.y + backgroundSize.height);
+    secondBackground.position = CGPointMake(0, firstBackground.position.y - backgroundSize.height);
     secondBackground.name = @"second background";
     
     _secondBackground = secondBackground;
@@ -101,7 +102,7 @@
     //THIRD BACKGROUND
     Background *thirdBackground = [Background generateNewBackground];
     thirdBackground.size = backgroundSize;
-    thirdBackground.position = CGPointMake(0, secondBackground.position.y + backgroundSize.height);
+    thirdBackground.position = CGPointMake(0, secondBackground.position.y - backgroundSize.height);
     thirdBackground.name = @"third background";
     
     _thirdBackground = thirdBackground;
@@ -133,42 +134,42 @@
     //1st background movement
     [self enumerateChildNodesWithName:_firstBackground.name usingBlock:^(SKNode *node, BOOL *stop) {
         //calculation of background move speed
-        node.position = CGPointMake(node.position.x, node.position.y - _backgroundMoveSpeed * _timeSinceLast);
+        node.position = CGPointMake(node.position.x, node.position.y + _backgroundMoveSpeed * _timeSinceLast);
         
         //if background moves completely off the screen - put it on the top of three background nodes
-        if (node.position.y < -(screenHeight * 1.5)) {
+        if (node.position.y > screenHeight * 1.5) {
             
-            CGPoint topPosition = CGPointMake(_thirdBackground.position.x, _thirdBackground.position.y + _thirdBackground.size.height - 20);//пришлось отнимать по 10 чтобы не было видно стыков между каждыми 3мя картинками дороги
-            node.position = topPosition;
-            NSLog(@"\n\n FIRST NODE WAS PUT ON THE TOP!\n\n");
+            CGPoint bottomPosition = CGPointMake(_thirdBackground.position.x, _thirdBackground.position.y - _thirdBackground.size.height + 20);//пришлось отнимать по 10 чтобы не было видно стыков между каждыми 3мя картинками дороги
+            node.position = bottomPosition;
+            NSLog(@"\n\n FIRST NODE WAS PUT ON THE BOTTOM!\n\n");
         }}];
     
     //2nd background movement
     [self enumerateChildNodesWithName:_secondBackground.name usingBlock:^(SKNode *node, BOOL *stop) {
         //calculation of background move speed
-        node.position = CGPointMake(node.position.x, node.position.y - _backgroundMoveSpeed * _timeSinceLast);
+        node.position = CGPointMake(node.position.x, node.position.y + _backgroundMoveSpeed * _timeSinceLast);
         
         //if background moves completely off the screen - put it on the top of three background nodes
-        if (node.position.y < -(screenHeight * 1.5)) {
+        if (node.position.y > screenHeight * 1.5) {
             
-            CGPoint topPosition = CGPointMake(_firstBackground.position.x, _firstBackground.position.y + _firstBackground.size.height - 20);//пришлось отнимать по 10 чтобы не было видно стыков между каждыми 3мя картинками дороги
+            CGPoint bottomPosition = CGPointMake(_firstBackground.position.x, _firstBackground.position.y - _firstBackground.size.height + 20);//пришлось отнимать по 10 чтобы не было видно стыков между каждыми 3мя картинками дороги
             
-            node.position = topPosition;
-            NSLog(@"\n\n SECOND NODE WAS PUT ON THE TOP!\n\n");
+            node.position = bottomPosition;
+            NSLog(@"\n\n SECOND NODE WAS PUT ON THE BOTTOM!\n\n");
         }}];
     
     //3rd background movement
     [self enumerateChildNodesWithName:_thirdBackground.name usingBlock:^(SKNode *node, BOOL *stop) {
         //calculation of background move speed
-        node.position = CGPointMake(node.position.x, node.position.y - _backgroundMoveSpeed * _timeSinceLast);
+        node.position = CGPointMake(node.position.x, node.position.y + _backgroundMoveSpeed * _timeSinceLast);
         
         //if background moves completely off the screen - put it on the top of three background nodes
-        if (node.position.y < -(screenHeight * 1.5)) {
+        if (node.position.y > screenHeight * 1.5) {
             
-            CGPoint topPosition = CGPointMake(_secondBackground.position.x, _secondBackground.position.y + _secondBackground.size.height - 20);//пришлось отнимать по 10 чтобы не было видно стыков между каждыми 3мя картинками дороги
+            CGPoint bottomPosition = CGPointMake(_secondBackground.position.x, _secondBackground.position.y - _secondBackground.size.height + 20);//пришлось отнимать по 10 чтобы не было видно стыков между каждыми 3мя картинками дороги
             
-            node.position = topPosition;
-            NSLog(@"\n\n THIRD NODE WAS PUT ON THE TOP!\n\n");
+            node.position = bottomPosition;
+            NSLog(@"\n\n THIRD NODE WAS PUT ON THE BOTTOM!\n\n");
         }}];
 }
 
