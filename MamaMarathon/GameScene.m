@@ -7,76 +7,141 @@
 //
 
 #import "GameScene.h"
+#import "Background.h"
 
 @implementation GameScene {
-    SKShapeNode *_spinnyNode;
-    SKLabelNode *_label;
+    
+    //screen size
+    CGFloat screenWidth;
+    CGFloat screenHeight;
+    CGSize screenCell;
+    
+    //for update method
+    NSTimeInterval _lastUpdateTimeInterval;
+    NSTimeInterval _timeSinceLast;
+    
+    //background
+    Background *_firstBackground;
+    Background *_secondBackground;
+    Background *_thirdBackground;
+    
+    //GAME MECHANIC
+    NSInteger _backgroundMoveSpeed; //было 250 //define the background move speed in pixels per frame.
+
 }
 
 - (void)didMoveToView:(SKView *)view {
-    // Setup your scene here
     
-    // Get label node from scene and store it for use later
-    _label = (SKLabelNode *)[self childNodeWithName:@"//helloLabel"];
+    //Get screen size to use later
+    screenWidth = view.bounds.size.width;
+    screenHeight = view.bounds.size.height;
+    screenCell = CGSizeMake(screenWidth/6, screenWidth/6);
+    NSLog(@"\n\nscreenCell = (%f, %f)\n\n", screenCell.width, screenCell.height);
     
-    _label.alpha = 0.0;
-    [_label runAction:[SKAction fadeInWithDuration:2.0]];
+    //назначаем скорость движения
+    _backgroundMoveSpeed = 300;
     
-    CGFloat w = (self.size.width + self.size.height) * 0.05;
-    
-    // Create shape node to use during mouse interaction
-    _spinnyNode = [SKShapeNode shapeNodeWithRectOfSize:CGSizeMake(w, w) cornerRadius:w * 0.3];
-    _spinnyNode.lineWidth = 2.5;
-    
-    [_spinnyNode runAction:[SKAction repeatActionForever:[SKAction rotateByAngle:M_PI duration:1]]];
-    [_spinnyNode runAction:[SKAction sequence:@[
-                                                [SKAction waitForDuration:0.5],
-                                                [SKAction fadeOutWithDuration:0.5],
-                                                [SKAction removeFromParent],
-                                                ]]];
+    [self addBackgrounds];
 }
 
+#pragma mark - Add objects on scene
+- (void)addBackgrounds{
 
-- (void)touchDownAtPoint:(CGPoint)pos {
-    SKShapeNode *n = [_spinnyNode copy];
-    n.position = pos;
-    n.strokeColor = [SKColor greenColor];
-    [self addChild:n];
+#warning высота бэкграунда должна зависеть от высоты HUD'a
+    CGSize backgroundSize = CGSizeMake(screenWidth, screenHeight);
+    
+    //FIRST BACKGROUND
+    Background *firstBackground = [Background generateNewBackground];
+    firstBackground.size = backgroundSize;
+    firstBackground.position = CGPointZero;
+    firstBackground.name = @"first background";
+    
+    _firstBackground = firstBackground;
+    [self addChild:_firstBackground];
+    NSLog(@"first background node created");
+    
+    //SECOND BACKGROUND
+    Background *secondBackground = [Background generateNewBackground];
+    secondBackground.size = backgroundSize;
+    secondBackground.position = CGPointMake(0, firstBackground.position.y + backgroundSize.height);
+    secondBackground.name = @"second background";
+    
+    _secondBackground = secondBackground;
+    [self addChild:_secondBackground];
+    NSLog(@"second background node created");
+    
+    //THIRD BACKGROUND
+    Background *thirdBackground = [Background generateNewBackground];
+    thirdBackground.size = backgroundSize;
+    thirdBackground.position = CGPointMake(0, secondBackground.position.y + backgroundSize.height);
+    thirdBackground.name = @"third background";
+    
+    _thirdBackground = thirdBackground;
+    [self addChild:_thirdBackground];
+    NSLog(@"third background node created");
 }
 
-- (void)touchMovedToPoint:(CGPoint)pos {
-    SKShapeNode *n = [_spinnyNode copy];
-    n.position = pos;
-    n.strokeColor = [SKColor blueColor];
-    [self addChild:n];
-}
-
-- (void)touchUpAtPoint:(CGPoint)pos {
-    SKShapeNode *n = [_spinnyNode copy];
-    n.position = pos;
-    n.strokeColor = [SKColor redColor];
-    [self addChild:n];
-}
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    // Run 'Pulse' action from 'Actions.sks'
-    [_label runAction:[SKAction actionNamed:@"Pulse"] withKey:@"fadeInOut"];
     
-    for (UITouch *t in touches) {[self touchDownAtPoint:[t locationInNode:self]];}
-}
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
-    for (UITouch *t in touches) {[self touchMovedToPoint:[t locationInNode:self]];}
-}
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    for (UITouch *t in touches) {[self touchUpAtPoint:[t locationInNode:self]];}
-}
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-    for (UITouch *t in touches) {[self touchUpAtPoint:[t locationInNode:self]];}
 }
 
-
+#pragma mark --- UPDATE METHOD
 -(void)update:(CFTimeInterval)currentTime {
     // Called before each frame is rendered
+    
+    //calculation of time since last update to calculate the movement speed of background.
+    _timeSinceLast = currentTime - _lastUpdateTimeInterval;
+    _lastUpdateTimeInterval = currentTime;
+    
+    //if too much time passed since last update - sms, phone call etc.
+    if (_timeSinceLast > 1) {
+        _timeSinceLast = 1.0/ 60.0;
+        _lastUpdateTimeInterval = currentTime;
+    }
+
+    //BACKGROUND MOVEMENT
+    
+    //1st background movement
+    [self enumerateChildNodesWithName:_firstBackground.name usingBlock:^(SKNode *node, BOOL *stop) {
+        //calculation of background move speed
+        node.position = CGPointMake(node.position.x, node.position.y - _backgroundMoveSpeed * _timeSinceLast);
+        
+        //if background moves completely off the screen - put it on the top of three background nodes
+        if (node.position.y < -(screenHeight * 1.5)) {
+            
+            CGPoint topPosition = CGPointMake(_thirdBackground.position.x, _thirdBackground.position.y + _thirdBackground.size.height - 20);//пришлось отнимать по 10 чтобы не было видно стыков между каждыми 3мя картинками дороги
+            node.position = topPosition;
+            NSLog(@"\n\n FIRST NODE WAS PUT ON THE TOP!\n\n");
+        }}];
+    
+    //2nd background movement
+    [self enumerateChildNodesWithName:_secondBackground.name usingBlock:^(SKNode *node, BOOL *stop) {
+        //calculation of background move speed
+        node.position = CGPointMake(node.position.x, node.position.y - _backgroundMoveSpeed * _timeSinceLast);
+        
+        //if background moves completely off the screen - put it on the top of three background nodes
+        if (node.position.y < -(screenHeight * 1.5)) {
+            
+            CGPoint topPosition = CGPointMake(_firstBackground.position.x, _firstBackground.position.y + _firstBackground.size.height - 20);//пришлось отнимать по 10 чтобы не было видно стыков между каждыми 3мя картинками дороги
+            
+            node.position = topPosition;
+            NSLog(@"\n\n SECOND NODE WAS PUT ON THE TOP!\n\n");
+        }}];
+    
+    //3rd background movement
+    [self enumerateChildNodesWithName:_thirdBackground.name usingBlock:^(SKNode *node, BOOL *stop) {
+        //calculation of background move speed
+        node.position = CGPointMake(node.position.x, node.position.y - _backgroundMoveSpeed * _timeSinceLast);
+        
+        //if background moves completely off the screen - put it on the top of three background nodes
+        if (node.position.y < -(screenHeight * 1.5)) {
+            
+            CGPoint topPosition = CGPointMake(_secondBackground.position.x, _secondBackground.position.y + _secondBackground.size.height - 20);//пришлось отнимать по 10 чтобы не было видно стыков между каждыми 3мя картинками дороги
+            
+            node.position = topPosition;
+            NSLog(@"\n\n THIRD NODE WAS PUT ON THE TOP!\n\n");
+        }}];
 }
 
 @end

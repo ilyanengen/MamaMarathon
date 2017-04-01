@@ -16,6 +16,9 @@
 		0916C1C21E8FFA9B00860E8C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0916C1C01E8FFA9B00860E8C /* Main.storyboard */; };
 		0916C1C41E8FFA9B00860E8C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0916C1C31E8FFA9B00860E8C /* Assets.xcassets */; };
 		0916C1C71E8FFA9B00860E8C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0916C1C51E8FFA9B00860E8C /* LaunchScreen.storyboard */; };
+		0916C1D11E9009A600860E8C /* pickup.png in Resources */ = {isa = PBXBuildFile; fileRef = 0916C1CF1E9009A600860E8C /* pickup.png */; };
+		0916C1D21E9009A600860E8C /* road1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0916C1D01E9009A600860E8C /* road1.jpg */; };
+		0916C1D51E900A2900860E8C /* Background.m in Sources */ = {isa = PBXBuildFile; fileRef = 0916C1D41E900A2900860E8C /* Background.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +36,10 @@
 		0916C1C31E8FFA9B00860E8C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0916C1C61E8FFA9B00860E8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0916C1C81E8FFA9B00860E8C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0916C1CF1E9009A600860E8C /* pickup.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pickup.png; sourceTree = "<group>"; };
+		0916C1D01E9009A600860E8C /* road1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = road1.jpg; sourceTree = "<group>"; };
+		0916C1D31E900A2900860E8C /* Background.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Background.h; sourceTree = "<group>"; };
+		0916C1D41E900A2900860E8C /* Background.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Background.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,16 +74,17 @@
 			children = (
 				0916C1B31E8FFA9B00860E8C /* AppDelegate.h */,
 				0916C1B41E8FFA9B00860E8C /* AppDelegate.m */,
-				0916C1B61E8FFA9B00860E8C /* GameScene.sks */,
-				0916C1B81E8FFA9B00860E8C /* Actions.sks */,
 				0916C1BA1E8FFA9B00860E8C /* GameScene.h */,
 				0916C1BB1E8FFA9B00860E8C /* GameScene.m */,
+				0916C1D31E900A2900860E8C /* Background.h */,
+				0916C1D41E900A2900860E8C /* Background.m */,
 				0916C1BD1E8FFA9B00860E8C /* GameViewController.h */,
 				0916C1BE1E8FFA9B00860E8C /* GameViewController.m */,
 				0916C1C01E8FFA9B00860E8C /* Main.storyboard */,
 				0916C1C31E8FFA9B00860E8C /* Assets.xcassets */,
 				0916C1C51E8FFA9B00860E8C /* LaunchScreen.storyboard */,
 				0916C1C81E8FFA9B00860E8C /* Info.plist */,
+				0916C1CE1E90097B00860E8C /* Art */,
 				0916C1B01E8FFA9B00860E8C /* Supporting Files */,
 			);
 			path = MamaMarathon;
@@ -85,9 +93,20 @@
 		0916C1B01E8FFA9B00860E8C /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0916C1B81E8FFA9B00860E8C /* Actions.sks */,
+				0916C1B61E8FFA9B00860E8C /* GameScene.sks */,
 				0916C1B11E8FFA9B00860E8C /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0916C1CE1E90097B00860E8C /* Art */ = {
+			isa = PBXGroup;
+			children = (
+				0916C1CF1E9009A600860E8C /* pickup.png */,
+				0916C1D01E9009A600860E8C /* road1.jpg */,
+			);
+			name = Art;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -150,8 +169,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				0916C1C21E8FFA9B00860E8C /* Main.storyboard in Resources */,
+				0916C1D21E9009A600860E8C /* road1.jpg in Resources */,
 				0916C1B71E8FFA9B00860E8C /* GameScene.sks in Resources */,
 				0916C1C41E8FFA9B00860E8C /* Assets.xcassets in Resources */,
+				0916C1D11E9009A600860E8C /* pickup.png in Resources */,
 				0916C1C71E8FFA9B00860E8C /* LaunchScreen.storyboard in Resources */,
 				0916C1B91E8FFA9B00860E8C /* Actions.sks in Resources */,
 			);
@@ -167,6 +188,7 @@
 				0916C1BF1E8FFA9B00860E8C /* GameViewController.m in Sources */,
 				0916C1B51E8FFA9B00860E8C /* AppDelegate.m in Sources */,
 				0916C1BC1E8FFA9B00860E8C /* GameScene.m in Sources */,
+				0916C1D51E900A2900860E8C /* Background.m in Sources */,
 				0916C1B21E8FFA9B00860E8C /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
