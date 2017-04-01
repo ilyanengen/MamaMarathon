@@ -26,9 +26,11 @@
     Background *_secondBackground;
     Background *_thirdBackground;
     
+    //Objects
+    SKSpriteNode *_pickupWithMama;
+    
     //GAME MECHANIC
     NSInteger _backgroundMoveSpeed; //было 250 //define the background move speed in pixels per frame.
-
 }
 
 - (void)didMoveToView:(SKView *)view {
@@ -44,6 +46,7 @@
     
     [self addHUD];
     [self addBackgrounds];
+    [self addPickupWithMama];
 }
 
 #pragma mark - Add objects on scene
@@ -110,6 +113,24 @@
     NSLog(@"third background node created");
 }
 
+- (void)addPickupWithMama {
+
+    //add pickup
+    SKSpriteNode *pickup = [SKSpriteNode spriteNodeWithImageNamed:@"pickup 2.png"];
+    pickup.anchorPoint = CGPointMake(0.5, 0.5);
+    pickup.zPosition = 2;
+    pickup.position = CGPointMake(screenWidth / 2, HUDheightProperty);
+    _pickupWithMama = pickup;
+    [self addChild:_pickupWithMama];
+    
+    //add mama on pickup
+    SKSpriteNode *mama = [SKSpriteNode spriteNodeWithColor:[SKColor redColor] size:screenCell];
+    mama.anchorPoint = CGPointMake(0.5,0.5);
+    mama.position = CGPointMake(0, screenCell.height);
+    mama.zPosition = 3;
+    //mama.position
+    [_pickupWithMama addChild:mama];
+}
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     
