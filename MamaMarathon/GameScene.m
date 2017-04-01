@@ -41,10 +41,38 @@
     //назначаем скорость движения
     _backgroundMoveSpeed = 300;
     
+    [self addHUD];
     [self addBackgrounds];
 }
 
 #pragma mark - Add objects on scene
+- (void)addHUD {
+
+    //create main HUD node
+    CGFloat HUDheight = screenHeight / 6 * 1.2;
+    
+    SKSpriteNode *HUDnode = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor] size:CGSizeMake(screenWidth, HUDheight)];
+    HUDnode.anchorPoint = CGPointZero;
+    HUDnode.position = CGPointZero;
+    HUDnode.zPosition = 10;
+    [self addChild:HUDnode];
+    
+    //create itemsBar on HUD node
+    SKSpriteNode *itemsBar = [SKSpriteNode spriteNodeWithColor:[SKColor darkGrayColor] size:CGSizeMake(screenWidth, screenHeight / 6)];
+    itemsBar.anchorPoint = CGPointZero;
+    itemsBar.position = CGPointZero;
+    itemsBar.zPosition = 11;
+    [HUDnode addChild:itemsBar];
+    
+    //create distanceBar on HUD node
+    CGFloat distanceBarHeight = HUDnode.size.height - itemsBar.size.height;
+    SKSpriteNode *distanceBar = [SKSpriteNode spriteNodeWithColor:[SKColor yellowColor] size:CGSizeMake(screenWidth, distanceBarHeight)];
+    distanceBar.anchorPoint =CGPointZero;
+    distanceBar.position = CGPointMake(0, itemsBar.size.height);
+    distanceBar.zPosition = 11;
+    [HUDnode addChild:distanceBar];
+}
+
 - (void)addBackgrounds{
 
 #warning высота бэкграунда должна зависеть от высоты HUD'a
