@@ -59,11 +59,11 @@ static const uint32_t bordersCategory =  0x1 << 3;
     //устанавливаем начальный статус
     _mamaThrewItem = NO;
     
+    [self addRunners];
     [self addHUD];
     [self addBackgrounds];
     [self addBorders];
     [self addPickupWithMama];
-    [self addRunners];
 }
 
 #pragma mark - Add objects on scene
@@ -165,13 +165,23 @@ static const uint32_t bordersCategory =  0x1 << 3;
 
 - (void)addRunners {
 
-    _runnersArray = [[NSMutableArray alloc]init];
+    _runnersArray = [NSMutableArray array];
     
+    //создаем текстуры для бегунов
+    SKTexture *runnerTexture1 = [SKTexture textureWithImageNamed:@"runner1.png"];
+    SKTexture *runnerTexture2 = [SKTexture textureWithImageNamed:@"runner2.png"];
+    
+    NSArray *runnerTextures = [NSArray arrayWithObjects:runnerTexture1,runnerTexture2, nil];
+    
+    //создаем анимацию из текстур
+    
+    SKAction *runnerAnimationAction = [SKAction animateWithTextures:runnerTextures timePerFrame:0.1];
+    
+    //создаем бегунов и добавляем в массив
     for (int i; i < 10; i++) {
         SKSpriteNode *runner = [SKSpriteNode spriteNodeWithColor:[SKColor blueColor] size:screenCell];
         runner.anchorPoint = CGPointMake(0.5, 0.5);
         runner.zPosition = 2;
-        //runner.position = CGPointMake(screenWidth / 2, screenHeight - screenCell.height);
         
         runner.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:screenCell.width / 2];
         runner.physicsBody.affectedByGravity = NO;
@@ -183,6 +193,8 @@ static const uint32_t bordersCategory =  0x1 << 3;
         runner.physicsBody.categoryBitMask = runnersCategory;
         runner.physicsBody.contactTestBitMask = itemsCategory;
         runner.physicsBody.collisionBitMask = runnersCategory | bordersCategory;
+        
+        [runner runAction:[SKAction repeatActionForever:runnerAnimationAction]];
         
         [self addChild:runner];
         [_runnersArray addObject:runner];
@@ -203,7 +215,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     //Выделяем сыночка из остальных бегунов
     [_runnersArray[5]setColor:[SKColor greenColor]];
-    [_runnersArray[5]setName:@"babyBoy"];
+    [_runnersArray[5]setName:@"son"];
 }
 
 #pragma mark --- GAME LOGIC
@@ -216,7 +228,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
 - (void)changeDirectionOfrunner: (SKSpriteNode*)runner {
 
     SKAction *runnerMoveAction = [[SKAction alloc]init];
-    _runnerChangeDirectionDuration = 0.8;
+    _runnerChangeDirectionDuration = 3;
     
     int randomNumber = arc4random_uniform(4);//будет рандомное значение 0, 1, 2, 3
     
@@ -224,25 +236,25 @@ static const uint32_t bordersCategory =  0x1 << 3;
         case 0:
             NSLog(@"change direction of runner: UP");
             runnerMoveAction = [SKAction moveByX:0
-                                               y:+screenCell.height
+                                               y:+screenCell.height/10
                                         duration:_runnerChangeDirectionDuration];
             break;
         case 1:
             NSLog(@"change direction of runner: RIGHT");
-            runnerMoveAction = [SKAction moveByX:+screenCell.width
+            runnerMoveAction = [SKAction moveByX:+screenCell.width/10
                                                y:0
                                         duration:_runnerChangeDirectionDuration];
             break;
         case 2:
             NSLog(@"change direction of runner: DOWN");
             runnerMoveAction = [SKAction moveByX:0
-                                               y:-screenCell.height
+                                               y:-screenCell.height/10
                                         duration:_runnerChangeDirectionDuration];
 
             break;
         case 3:
             NSLog(@"change direction of runner: LEFT");
-            runnerMoveAction = [SKAction moveByX:-screenCell.width
+            runnerMoveAction = [SKAction moveByX:-screenCell.width/10
                                                y:0
                                         duration:_runnerChangeDirectionDuration];
             break;
@@ -265,9 +277,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
         _timeSinceLast = 1.0/ 60.0;
         _lastUpdateTimeInterval = currentTime;
     }
-    
-#warning test runners change direction
-    //TEST RUNNERS
+
     //Если мама ничего не кинула, то бегуны бегают в рандомных направлениях, если мама что-то кинула - все бегуны разбегаются от айтема
     if (!_mamaThrewItem) {
         NSLog(@"Runners are running in random directions");
@@ -325,22 +335,6 @@ static const uint32_t bordersCategory =  0x1 << 3;
             
             //+1 to iterationCounter
             [self iterationCounterPlusOne];
-            
-            /*
-            //Если мама ничего не кинула, то бегуны бегают в рандомных направлениях, если мама что-то кинула - все бегуны разбегаются от айтема
-            if (!_mamaThrewItem) {
-                NSLog(@"Runners are running in random directions");
-            for (SKSpriteNode *runner in _runnersArray) {
-                    [self changeDirectionOfrunner:runner];
-                }
-            }else{
-                NSLog(@"Runners are going from the item!");
-                //for (SKSpriteNode *runner in _runnersArray) {
-                  //  [self runnersGoAwayFromItem:runner itemPosition:_mamaThrownItem.position];
-                //}
-            }
-            
-            */
             
         }}];
 }
