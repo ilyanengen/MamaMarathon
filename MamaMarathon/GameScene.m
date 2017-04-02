@@ -103,6 +103,8 @@ static const uint32_t bordersCategory =  0x1 << 3;
     bananaButton.position = CGPointMake(-(screenWidth / 8 * 3), 0);
     _bananaButton = bananaButton;
     [itemsBar addChild:_bananaButton];
+    SKSpriteNode *bananaImageOnButton = [SKSpriteNode spriteNodeWithImageNamed:@"banana64.png"];
+    [_bananaButton addChild:bananaImageOnButton];
     
     //oil button
     SKSpriteNode *oilButton = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor]
@@ -112,6 +114,8 @@ static const uint32_t bordersCategory =  0x1 << 3;
     oilButton.position = CGPointMake(- screenWidth / 8, 0);
     _oilButton = oilButton;
     [itemsBar addChild:_oilButton];
+    SKSpriteNode *oilImageOnButton = [SKSpriteNode spriteNodeWithImageNamed:@"oil64.png"];
+    [_oilButton addChild:oilImageOnButton];
     
     //water button
     SKSpriteNode *waterButton = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor]
@@ -121,6 +125,8 @@ static const uint32_t bordersCategory =  0x1 << 3;
     waterButton.position = CGPointMake(screenWidth / 8 , 0);
     _waterButton = waterButton;
     [itemsBar addChild:_waterButton];
+    SKSpriteNode *waterImageOnButton = [SKSpriteNode spriteNodeWithImageNamed:@"water64.png"];
+    [_waterButton addChild:waterImageOnButton];
 
     //hamburger button
     SKSpriteNode *hamburgerButton = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor]
@@ -130,8 +136,9 @@ static const uint32_t bordersCategory =  0x1 << 3;
     hamburgerButton.position = CGPointMake(screenWidth / 8 * 3, 0);
     _hamburgerButton = hamburgerButton;
     [itemsBar addChild:_hamburgerButton];
+    SKSpriteNode *hamburgerImageOnButton = [SKSpriteNode spriteNodeWithImageNamed:@"hamburger64.png"];
+    [_hamburgerButton addChild:hamburgerImageOnButton];
 
-    
     //create distanceBar on HUD node
     CGFloat distanceBarHeight = HUDnode.size.height - itemsBar.size.height;
     SKSpriteNode *distanceBar = [SKSpriteNode spriteNodeWithColor:[SKColor yellowColor] size:CGSizeMake(screenWidth, distanceBarHeight)];
