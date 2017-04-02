@@ -9,6 +9,12 @@
 #import "GameScene.h"
 #import "Background.h"
 
+//Physics bodies collisions and contact bitMasks
+static const uint32_t mamaCategory =  0x1 << 0;
+static const uint32_t runnersCategory =  0x1 << 1;
+static const uint32_t itemsCategory =  0x1 << 2;
+static const uint32_t bordersCategory =  0x1 << 3;
+
 @implementation GameScene {
     
     //screen size
@@ -28,6 +34,7 @@
     
     //Objects
     SKSpriteNode *_pickupWithMama;
+    SKSpriteNode *_runner;
     
     //GAME MECHANIC
     NSInteger _backgroundMoveSpeed; //было 250 //define the background move speed in pixels per frame.
@@ -38,7 +45,7 @@
     //Get screen size to use later
     screenWidth = view.bounds.size.width;
     screenHeight = view.bounds.size.height;
-    screenCell = CGSizeMake(screenWidth/6, screenWidth/6);
+    screenCell = CGSizeMake(screenWidth/10, screenWidth/10);
     NSLog(@"\n\nscreenCell = (%f, %f)\n\n", screenCell.width, screenCell.height);
     
     //назначаем скорость движения
@@ -46,7 +53,9 @@
     
     [self addHUD];
     [self addBackgrounds];
+    [self addBorders];
     [self addPickupWithMama];
+    [self addRunners];
 }
 
 #pragma mark - Add objects on scene
@@ -113,6 +122,20 @@
     NSLog(@"third background node created");
 }
 
+- (void)addBorders {
+
+    CGFloat bottomForBorder = screenHeight * 3;
+    CGFloat heightForBorder = screenHeight * 6;
+    CGRect bordersRect = CGRectMake(0, - bottomForBorder, screenWidth, heightForBorder);
+    SKPhysicsBody *borders = [SKPhysicsBody bodyWithEdgeLoopFromRect:bordersRect];
+    
+    borders.categoryBitMask = bordersCategory;
+    borders.collisionBitMask = itemsCategory | runnersCategory;
+    borders.contactTestBitMask = 0;
+    
+    self.physicsBody = borders;
+}
+
 - (void)addPickupWithMama {
 
     //add pickup
@@ -130,6 +153,29 @@
     mama.zPosition = 3;
     //mama.position
     [_pickupWithMama addChild:mama];
+}
+
+- (void)addRunners {
+
+    SKSpriteNode *runner = [SKSpriteNode spriteNodeWithColor:[SKColor blueColor] size:screenCell];
+    runner.anchorPoint = CGPointMake(0.5, 0.5);
+    runner.zPosition = 2;
+    runner.position = CGPointMake(screenWidth / 2, screenHeight - screenCell.height);
+    runner.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:screenCell.width / 2];
+    
+    runner.physicsBody.affectedByGravity = NO;
+    runner.physicsBody.allowsRotation = NO;
+    runner.physicsBody.restitution = 0.0;
+    runner.physicsBody.friction = 0.0;
+    runner.physicsBody.dynamic = YES;
+    
+    runner.physicsBody.categoryBitMask = runnersCategory;
+    runner.physicsBody.contactTestBitMask = itemsCategory;
+    runner.physicsBody.collisionBitMask = runnersCategory | bordersCategory;
+    
+    _runner = runner;
+    [self addChild:_runner];
+    
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
