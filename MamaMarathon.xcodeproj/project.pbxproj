@@ -22,6 +22,9 @@
 		09E698E21E90EA5B00E4AC94 /* runner1.png in Resources */ = {isa = PBXBuildFile; fileRef = 09E698DF1E90EA5B00E4AC94 /* runner1.png */; };
 		09E698E31E90EA5B00E4AC94 /* runner2.png in Resources */ = {isa = PBXBuildFile; fileRef = 09E698E01E90EA5B00E4AC94 /* runner2.png */; };
 		09E698E41E90EA5B00E4AC94 /* runner3.png in Resources */ = {isa = PBXBuildFile; fileRef = 09E698E11E90EA5B00E4AC94 /* runner3.png */; };
+		09E698EE1E90FAD400E4AC94 /* son2.png in Resources */ = {isa = PBXBuildFile; fileRef = 09E698EB1E90FAD400E4AC94 /* son2.png */; };
+		09E698EF1E90FAD400E4AC94 /* son3.png in Resources */ = {isa = PBXBuildFile; fileRef = 09E698EC1E90FAD400E4AC94 /* son3.png */; };
+		09E698F01E90FAD400E4AC94 /* son1.png in Resources */ = {isa = PBXBuildFile; fileRef = 09E698ED1E90FAD400E4AC94 /* son1.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +49,9 @@
 		09E698DF1E90EA5B00E4AC94 /* runner1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = runner1.png; sourceTree = "<group>"; };
 		09E698E01E90EA5B00E4AC94 /* runner2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = runner2.png; sourceTree = "<group>"; };
 		09E698E11E90EA5B00E4AC94 /* runner3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = runner3.png; sourceTree = "<group>"; };
+		09E698EB1E90FAD400E4AC94 /* son2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = son2.png; sourceTree = "<group>"; };
+		09E698EC1E90FAD400E4AC94 /* son3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = son3.png; sourceTree = "<group>"; };
+		09E698ED1E90FAD400E4AC94 /* son1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = son1.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +115,9 @@
 		0916C1CE1E90097B00860E8C /* Art */ = {
 			isa = PBXGroup;
 			children = (
+				09E698EB1E90FAD400E4AC94 /* son2.png */,
+				09E698EC1E90FAD400E4AC94 /* son3.png */,
+				09E698ED1E90FAD400E4AC94 /* son1.png */,
 				09E698DF1E90EA5B00E4AC94 /* runner1.png */,
 				09E698E01E90EA5B00E4AC94 /* runner2.png */,
 				09E698E11E90EA5B00E4AC94 /* runner3.png */,
@@ -179,7 +188,10 @@
 			files = (
 				09E698E31E90EA5B00E4AC94 /* runner2.png in Resources */,
 				0916C1C21E8FFA9B00860E8C /* Main.storyboard in Resources */,
+				09E698EF1E90FAD400E4AC94 /* son3.png in Resources */,
 				09E698E21E90EA5B00E4AC94 /* runner1.png in Resources */,
+				09E698EE1E90FAD400E4AC94 /* son2.png in Resources */,
+				09E698F01E90FAD400E4AC94 /* son1.png in Resources */,
 				0916C1D21E9009A600860E8C /* road1.jpg in Resources */,
 				0916C1B71E8FFA9B00860E8C /* GameScene.sks in Resources */,
 				09E698E41E90EA5B00E4AC94 /* runner3.png in Resources */,

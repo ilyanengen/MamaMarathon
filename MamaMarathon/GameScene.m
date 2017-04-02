@@ -170,12 +170,15 @@ static const uint32_t bordersCategory =  0x1 << 3;
     //создаем текстуры для бегунов
     SKTexture *runnerTexture1 = [SKTexture textureWithImageNamed:@"runner1.png"];
     SKTexture *runnerTexture2 = [SKTexture textureWithImageNamed:@"runner2.png"];
-    
     NSArray *runnerTextures = [NSArray arrayWithObjects:runnerTexture1,runnerTexture2, nil];
-    
-    //создаем анимацию из текстур
-    
+    //создаем анимацию бегунов из текстур
     SKAction *runnerAnimationAction = [SKAction animateWithTextures:runnerTextures timePerFrame:0.1];
+    
+    //создаем сыночка
+    SKTexture *sonTexture1 = [SKTexture textureWithImageNamed:@"son1.png"];
+    SKTexture *sonTexture2 = [SKTexture textureWithImageNamed:@"son2.png"];
+    NSArray *sonTextures = [NSArray arrayWithObjects:sonTexture1,sonTexture2, nil];
+    SKAction *sonAnimationAction = [SKAction animateWithTextures:sonTextures timePerFrame:0.2];
     
     //создаем бегунов и добавляем в массив
     for (int i; i < 10; i++) {
@@ -194,7 +197,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
         runner.physicsBody.contactTestBitMask = itemsCategory;
         runner.physicsBody.collisionBitMask = runnersCategory | bordersCategory;
         
-        [runner runAction:[SKAction repeatActionForever:runnerAnimationAction]];
+        //[runner runAction:[SKAction repeatActionForever:runnerAnimationAction]];
         
         [self addChild:runner];
         [_runnersArray addObject:runner];
@@ -213,9 +216,20 @@ static const uint32_t bordersCategory =  0x1 << 3;
     [_runnersArray[8] setPosition:CGPointMake(screenCell.width * 8.5, screenHeight - screenCell.height * 1.5)];
     [_runnersArray[9] setPosition:CGPointMake(screenCell.width * 9.5, screenHeight - screenCell.height * 2.5)];
     
+    //Анимируем бегунов
+    [_runnersArray[0] runAction:[SKAction repeatActionForever:runnerAnimationAction]];
+    [_runnersArray[1] runAction:[SKAction repeatActionForever:runnerAnimationAction]];
+    [_runnersArray[2] runAction:[SKAction repeatActionForever:runnerAnimationAction]];
+    [_runnersArray[3] runAction:[SKAction repeatActionForever:runnerAnimationAction]];
+    [_runnersArray[4] runAction:[SKAction repeatActionForever:runnerAnimationAction]];
+    [_runnersArray[6] runAction:[SKAction repeatActionForever:runnerAnimationAction]];
+    [_runnersArray[7] runAction:[SKAction repeatActionForever:runnerAnimationAction]];
+    [_runnersArray[8] runAction:[SKAction repeatActionForever:runnerAnimationAction]];
+    [_runnersArray[9] runAction:[SKAction repeatActionForever:runnerAnimationAction]];
+    
     //Выделяем сыночка из остальных бегунов
-    [_runnersArray[5]setColor:[SKColor greenColor]];
-    [_runnersArray[5]setName:@"son"];
+    [_runnersArray[5] setName:@"son"];
+    [_runnersArray[5] runAction:[SKAction repeatActionForever:sonAnimationAction]];
 }
 
 #pragma mark --- GAME LOGIC
