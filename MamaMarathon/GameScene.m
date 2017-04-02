@@ -36,6 +36,12 @@ static const uint32_t bordersCategory =  0x1 << 3;
     SKSpriteNode *_pickupWithMama;
     NSMutableArray *_runnersArray;
     
+    //Buttons
+    SKSpriteNode *_bananaButton;
+    SKSpriteNode *_oilButton;
+    SKSpriteNode *_waterButton;
+    SKSpriteNode *_hamburgerButton;
+    
     //GAME MECHANIC
     NSInteger _backgroundMoveSpeed; //define the background move speed in pixels per frame.
     NSInteger _iterationCount; //+1 on every 3rd background
@@ -81,10 +87,50 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     //create itemsBar on HUD node
     SKSpriteNode *itemsBar = [SKSpriteNode spriteNodeWithColor:[SKColor darkGrayColor] size:CGSizeMake(screenWidth, screenHeight / 6)];
-    itemsBar.anchorPoint = CGPointZero;
-    itemsBar.position = CGPointZero;
+    itemsBar.anchorPoint = CGPointMake(0.5, 0.5);
+    itemsBar.position = CGPointMake(screenWidth / 2, itemsBar.size.height / 2);
     itemsBar.zPosition = 11;
     [HUDnode addChild:itemsBar];
+    
+    //BUTTONS on itemsBar
+    CGSize buttonSize = CGSizeMake(screenCell.width * 2, screenCell.height * 2);
+    //banana button
+   
+    SKSpriteNode *bananaButton = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor]
+                                                              size:buttonSize];
+    bananaButton.zPosition = 12;
+    bananaButton.anchorPoint = CGPointMake(0.5, 0.5);
+    bananaButton.position = CGPointMake(-(screenWidth / 8 * 3), 0);
+    _bananaButton = bananaButton;
+    [itemsBar addChild:_bananaButton];
+    
+    //oil button
+    SKSpriteNode *oilButton = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor]
+                                                              size:buttonSize];
+    oilButton.zPosition = 12;
+    oilButton.anchorPoint = CGPointMake(0.5, 0.5);
+    oilButton.position = CGPointMake(- screenWidth / 8, 0);
+    _oilButton = oilButton;
+    [itemsBar addChild:_oilButton];
+    
+    //water button
+    SKSpriteNode *waterButton = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor]
+                                                           size:buttonSize];
+    waterButton.zPosition = 12;
+    waterButton.anchorPoint = CGPointMake(0.5, 0.5);
+    waterButton.position = CGPointMake(screenWidth / 8 , 0);
+    _waterButton = waterButton;
+    [itemsBar addChild:_waterButton];
+
+    //hamburger button
+    SKSpriteNode *hamburgerButton = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor]
+                                                             size:buttonSize];
+    hamburgerButton.zPosition = 12;
+    hamburgerButton.anchorPoint = CGPointMake(0.5, 0.5);
+    hamburgerButton.position = CGPointMake(screenWidth / 8 * 3, 0);
+    _hamburgerButton = hamburgerButton;
+    [itemsBar addChild:_hamburgerButton];
+
     
     //create distanceBar on HUD node
     CGFloat distanceBarHeight = HUDnode.size.height - itemsBar.size.height;
@@ -155,7 +201,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     [self addChild:_pickupWithMama];
     
     //add mama on pickup
-    SKSpriteNode *mama = [SKSpriteNode spriteNodeWithColor:[SKColor redColor] size:screenCell];
+    SKSpriteNode *mama = [SKSpriteNode spriteNodeWithImageNamed:@"mama.png"];
     mama.anchorPoint = CGPointMake(0.5,0.5);
     mama.position = CGPointMake(0, screenCell.height);
     mama.zPosition = 3;
