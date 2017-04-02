@@ -36,6 +36,11 @@ static const uint32_t bordersCategory =  0x1 << 3;
     SKSpriteNode *_pickupWithMama;
     NSMutableArray *_runnersArray;
     
+    SKSpriteNode *_bananaNode;
+    SKSpriteNode *_oilNode;
+    SKSpriteNode *_waterNode;
+    SKSpriteNode *_hamburgerNode;
+    
     //Buttons
     SKSpriteNode *_bananaButton;
     SKSpriteNode *_oilButton;
@@ -104,6 +109,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     _bananaButton = bananaButton;
     [itemsBar addChild:_bananaButton];
     SKSpriteNode *bananaImageOnButton = [SKSpriteNode spriteNodeWithImageNamed:@"banana64.png"];
+    bananaImageOnButton.name = @"bananaButton";
     [_bananaButton addChild:bananaImageOnButton];
     
     //oil button
@@ -115,6 +121,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     _oilButton = oilButton;
     [itemsBar addChild:_oilButton];
     SKSpriteNode *oilImageOnButton = [SKSpriteNode spriteNodeWithImageNamed:@"oil64.png"];
+    oilImageOnButton.name = @"oilButton";
     [_oilButton addChild:oilImageOnButton];
     
     //water button
@@ -126,6 +133,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     _waterButton = waterButton;
     [itemsBar addChild:_waterButton];
     SKSpriteNode *waterImageOnButton = [SKSpriteNode spriteNodeWithImageNamed:@"water64.png"];
+    waterImageOnButton.name = @"waterButton";
     [_waterButton addChild:waterImageOnButton];
 
     //hamburger button
@@ -137,6 +145,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     _hamburgerButton = hamburgerButton;
     [itemsBar addChild:_hamburgerButton];
     SKSpriteNode *hamburgerImageOnButton = [SKSpriteNode spriteNodeWithImageNamed:@"hamburger64.png"];
+     hamburgerImageOnButton.name = @"hamburgerButton";
     [_hamburgerButton addChild:hamburgerImageOnButton];
 
     //create distanceBar on HUD node
@@ -301,26 +310,26 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     switch (randomNumber) {
         case 0:
-            NSLog(@"change direction of runner: UP");
+            //NSLog(@"change direction of runner: UP");
             runnerMoveAction = [SKAction moveByX:0
                                                y:+screenCell.height/10
                                         duration:_runnerChangeDirectionDuration];
             break;
         case 1:
-            NSLog(@"change direction of runner: RIGHT");
+            //NSLog(@"change direction of runner: RIGHT");
             runnerMoveAction = [SKAction moveByX:+screenCell.width/10
                                                y:0
                                         duration:_runnerChangeDirectionDuration];
             break;
         case 2:
-            NSLog(@"change direction of runner: DOWN");
+            //NSLog(@"change direction of runner: DOWN");
             runnerMoveAction = [SKAction moveByX:0
                                                y:-screenCell.height/10
                                         duration:_runnerChangeDirectionDuration];
 
             break;
         case 3:
-            NSLog(@"change direction of runner: LEFT");
+            //NSLog(@"change direction of runner: LEFT");
             runnerMoveAction = [SKAction moveByX:-screenCell.width/10
                                                y:0
                                         duration:_runnerChangeDirectionDuration];
@@ -347,7 +356,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
 
     //Если мама ничего не кинула, то бегуны бегают в рандомных направлениях, если мама что-то кинула - все бегуны разбегаются от айтема
     if (!_mamaThrewItem) {
-        NSLog(@"Runners are running in random directions");
+        //NSLog(@"Runners are running in random directions");
         for (SKSpriteNode *runner in _runnersArray) {
             [self changeDirectionOfrunner:runner];
         }
@@ -406,8 +415,64 @@ static const uint32_t bordersCategory =  0x1 << 3;
         }}];
 }
 
+#pragma mark --- TOUCHES
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     
+    UITouch *touch = [touches anyObject];
+    CGPoint location = [touch locationInNode:self];
+    SKNode *node = [self nodeAtPoint:location];
+    
+    
+    if ([node.name isEqualToString:@"bananaButton"]) {
+    
+        NSLog(@"\n\nhandleBananaButton\n\n");
+        
+        [self handleBananaButton];
+    
+    }else if ([node.name isEqualToString:@"oilButton"]) {
+    
+        [self handleOilButton];
+        
+    }else if ([node.name isEqualToString:@"waterButton"]) {
+    
+        [self handleWaterButton];
+    
+    } else if ([node.name isEqualToString:@"hamburgerButton"]) {
+    
+        [self handleHamburgerButton];
+    }
 }
+
+#pragma mark --- HANDLE ITEM BUTTONS
+
+- (void)handleBananaButton{
+
+    NSLog(@"\n\nhandleBananaButton STARTS\n\n");
+    SKSpriteNode *bananaNode = [SKSpriteNode spriteNodeWithImageNamed:@"banana32.png"];
+    
+    bananaNode.anchorPoint = CGPointMake(0.5, 0.5);
+    bananaNode.zPosition = 2;
+    bananaNode.name = @"bananaNode";
+    
+    bananaNode.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:bananaNode.size];
+    
+   bananaNode.physicsBody.affectedByGravity = NO;
+    bananaNode.physicsBody.allowsRotation = NO;
+    bananaNode.physicsBody.restitution = 0.0;
+    bananaNode.physicsBody.friction = 0.0;
+    bananaNode.physicsBody.dynamic = NO;
+    
+    bananaNode.physicsBody.categoryBitMask = itemsCategory;
+    bananaNode.physicsBody.contactTestBitMask = runnersCategory;
+    bananaNode.physicsBody.collisionBitMask = bordersCategory;
+    
+    _bananaNode = bananaNode;
+}
+
+- (void)handleOilButton{}
+    
+- (void)handleWaterButton{};
+
+- (void)handleHamburgerButton{};
 
 @end
