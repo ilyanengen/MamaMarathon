@@ -17,10 +17,9 @@ typedef NS_ENUM(NSUInteger, mamaSelectedItemList) {
 };
 
 //Physics bodies collisions and contact bitMasks
-static const uint32_t mamaCategory =  0x1 << 0;
-static const uint32_t runnersCategory =  0x1 << 1;
-static const uint32_t itemsCategory =  0x1 << 2;
-static const uint32_t bordersCategory =  0x1 << 3;
+static const uint32_t runnersCategory =  0x1 << 0;
+static const uint32_t itemsCategory =  0x1 << 1;
+static const uint32_t bordersCategory =  0x1 << 2;
 
 @implementation GameScene {
     
@@ -258,6 +257,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
         SKSpriteNode *runner = [SKSpriteNode spriteNodeWithColor:[SKColor blueColor] size:screenCell];
         runner.anchorPoint = CGPointMake(0.5, 0.5);
         runner.zPosition = 2;
+        runner.name = @"runner";
         
         runner.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:screenCell.width / 2];
         runner.physicsBody.affectedByGravity = NO;
@@ -268,7 +268,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
         
         runner.physicsBody.categoryBitMask = runnersCategory;
         runner.physicsBody.contactTestBitMask = itemsCategory;
-        runner.physicsBody.collisionBitMask = runnersCategory | bordersCategory;
+        runner.physicsBody.collisionBitMask = runnersCategory | bordersCategory | itemsCategory;
         
         //[runner runAction:[SKAction repeatActionForever:runnerAnimationAction]];
         
@@ -301,7 +301,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     [_runnersArray[9] runAction:[SKAction repeatActionForever:runnerAnimationAction]];
     
     //Выделяем сыночка из остальных бегунов
-    [_runnersArray[5] setName:@"son"];
+    //[_runnersArray[5] setName:@"son"];
     [_runnersArray[5] runAction:[SKAction repeatActionForever:sonAnimationAction]];
 }
 
@@ -405,6 +405,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
             
             node.position = bottomPosition;
             NSLog(@"\n\n SECOND NODE WAS PUT ON THE BOTTOM!\n\n");
+            [_bananaNode removeFromParent];
         }}];
     
     //3rd background movement
@@ -423,7 +424,6 @@ static const uint32_t bordersCategory =  0x1 << 3;
             //+1 to iterationCounter
             [self iterationCounterPlusOne];
             
-#warning remove banana from parent
         }}];
 }
 
@@ -472,11 +472,11 @@ static const uint32_t bordersCategory =  0x1 << 3;
             bananaNode.physicsBody.allowsRotation = NO;
             bananaNode.physicsBody.restitution = 0.0;
             bananaNode.physicsBody.friction = 0.0;
-            bananaNode.physicsBody.dynamic = NO;
+            bananaNode.physicsBody.dynamic = YES;
             
             bananaNode.physicsBody.categoryBitMask = itemsCategory;
             bananaNode.physicsBody.contactTestBitMask = runnersCategory;
-            bananaNode.physicsBody.collisionBitMask = bordersCategory;
+            bananaNode.physicsBody.collisionBitMask = bordersCategory | runnersCategory;
             
             bananaNode.position = location;
             
@@ -531,5 +531,22 @@ mamaSelectedItem = mamaSelectedItemWater;
 
 mamaSelectedItem = mamaSelectedItemHamburger;
 }
+
+- (void)didBeginContact:(SKPhysicsContact *)contact {
+    
+    SKNode *bodyANode = contact.bodyA.node;
+    SKNode *bodyBNode = contact.bodyB.node;
+    
+    NSLog(@"Body A: %@  Body B: %@",bodyANode.name, bodyBNode.name);
+    
+    if ([bodyANode.name isEqualToString:@"runner"] && [bodyBNode.name isEqualToString:@"bananaNode"] ){
+        
+        [bodyANode removeFromParent];
+    } else if ([bodyBNode.name isEqualToString:@"runner"] && [bodyANode.name isEqualToString:@"bananaNode"]) {
+    
+        [bodyBNode removeFromParent];
+    }
+}
+
 
 @end
