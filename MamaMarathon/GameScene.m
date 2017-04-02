@@ -9,6 +9,13 @@
 #import "GameScene.h"
 #import "Background.h"
 
+typedef NS_ENUM(NSUInteger, mamaSelectedItemList) {
+    mamaSelectedItemBanana,
+    mamaSelectedItemOil,
+    mamaSelectedItemWater,
+    mamaSelectedItemHamburger
+};
+
 //Physics bodies collisions and contact bitMasks
 static const uint32_t mamaCategory =  0x1 << 0;
 static const uint32_t runnersCategory =  0x1 << 1;
@@ -51,9 +58,12 @@ static const uint32_t bordersCategory =  0x1 << 3;
     NSInteger _backgroundMoveSpeed; //define the background move speed in pixels per frame.
     NSInteger _iterationCount; //+1 on every 3rd background
     
+    
     NSTimeInterval _runnerChangeDirectionDuration;
     
+    BOOL _isMamaSelectedItem;
     BOOL _mamaThrewItem;
+    mamaSelectedItemList mamaSelectedItem;
 }
 
 - (void)didMoveToView:(SKView *)view {
@@ -69,6 +79,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     //устанавливаем начальный статус
     _mamaThrewItem = NO;
+    _isMamaSelectedItem = NO;
     
     [self addRunners];
     [self addHUD];
@@ -412,6 +423,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
             //+1 to iterationCounter
             [self iterationCounterPlusOne];
             
+#warning remove banana from parent
         }}];
 }
 
@@ -422,13 +434,12 @@ static const uint32_t bordersCategory =  0x1 << 3;
     CGPoint location = [touch locationInNode:self];
     SKNode *node = [self nodeAtPoint:location];
     
-    
     if ([node.name isEqualToString:@"bananaButton"]) {
     
-        NSLog(@"\n\nhandleBananaButton\n\n");
-        
+        NSLog(@"\n\n BANANA BUTTON \n\n");
+        _isMamaSelectedItem = YES;
         [self handleBananaButton];
-    
+        
     }else if ([node.name isEqualToString:@"oilButton"]) {
     
         [self handleOilButton];
@@ -440,13 +451,48 @@ static const uint32_t bordersCategory =  0x1 << 3;
     } else if ([node.name isEqualToString:@"hamburgerButton"]) {
     
         [self handleHamburgerButton];
-    }
-}
+        
+        //ЕСЛИ ЮЗЕР НАЖАЛ НА БЭКГРАУНД
+    } else if (([node.name isEqualToString:@"first background"]) || ([node.name isEqualToString:@"second background"]) || ([node.name isEqualToString:@"third background"])){
+    
+        if (!_isMamaSelectedItem) {
+            NSLog(@"\n\n USER TOUCHED BACKGROUND BEFORE ITEM BUTTON!\n\n");
+        } else if (_isMamaSelectedItem) {
+            NSLog(@"\n\n USER TOUCHED BACKGROUND AFTER ITEM BUTTON!\n\n");
+            
+            SKSpriteNode *bananaNode = [SKSpriteNode spriteNodeWithImageNamed:@"banana32.png"];
+            
+            bananaNode.anchorPoint = CGPointMake(0.5, 0.5);
+            bananaNode.zPosition = 2;
+            bananaNode.name = @"bananaNode";
+            
+            bananaNode.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:bananaNode.size];
+            
+            bananaNode.physicsBody.affectedByGravity = NO;
+            bananaNode.physicsBody.allowsRotation = NO;
+            bananaNode.physicsBody.restitution = 0.0;
+            bananaNode.physicsBody.friction = 0.0;
+            bananaNode.physicsBody.dynamic = NO;
+            
+            bananaNode.physicsBody.categoryBitMask = itemsCategory;
+            bananaNode.physicsBody.contactTestBitMask = runnersCategory;
+            bananaNode.physicsBody.collisionBitMask = bordersCategory;
+            
+            bananaNode.position = location;
+            
+            _bananaNode = bananaNode;
+            [_thirdBackground addChild:_bananaNode];
+        }
+    }}
 
 #pragma mark --- HANDLE ITEM BUTTONS
 
-- (void)handleBananaButton{
+- (void)handleBananaButton {
+    
+    //Мама выбрала айтем
+    mamaSelectedItem = mamaSelectedItemBanana;
 
+    /*
     NSLog(@"\n\nhandleBananaButton STARTS\n\n");
     SKSpriteNode *bananaNode = [SKSpriteNode spriteNodeWithImageNamed:@"banana32.png"];
     
@@ -456,7 +502,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     bananaNode.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:bananaNode.size];
     
-   bananaNode.physicsBody.affectedByGravity = NO;
+    bananaNode.physicsBody.affectedByGravity = NO;
     bananaNode.physicsBody.allowsRotation = NO;
     bananaNode.physicsBody.restitution = 0.0;
     bananaNode.physicsBody.friction = 0.0;
@@ -467,12 +513,23 @@ static const uint32_t bordersCategory =  0x1 << 3;
     bananaNode.physicsBody.collisionBitMask = bordersCategory;
     
     _bananaNode = bananaNode;
+    [_thirdBackground addChild:_bananaNode];
+     */
 }
 
-- (void)handleOilButton{}
+- (void)handleOilButton{
     
-- (void)handleWaterButton{};
+mamaSelectedItem = mamaSelectedItemOil;
+}
+    
+- (void)handleWaterButton{
 
-- (void)handleHamburgerButton{};
+mamaSelectedItem = mamaSelectedItemWater;
+}
+
+- (void)handleHamburgerButton{
+
+mamaSelectedItem = mamaSelectedItemHamburger;
+}
 
 @end
