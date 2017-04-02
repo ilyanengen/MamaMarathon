@@ -34,10 +34,15 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     //Objects
     SKSpriteNode *_pickupWithMama;
-    SKSpriteNode *_runner;
+    NSMutableArray *_runnersArray;
     
     //GAME MECHANIC
-    NSInteger _backgroundMoveSpeed; //было 250 //define the background move speed in pixels per frame.
+    NSInteger _backgroundMoveSpeed; //define the background move speed in pixels per frame.
+    NSInteger _iterationCount; //+1 on every 3rd background
+    
+    NSTimeInterval _runnerChangeDirectionDuration;
+    
+    BOOL _mamaThrewItem;
 }
 
 - (void)didMoveToView:(SKView *)view {
@@ -50,6 +55,9 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     //назначаем скорость движения
     _backgroundMoveSpeed = 300;
+    
+    //устанавливаем начальный статус
+    _mamaThrewItem = NO;
     
     [self addHUD];
     [self addBackgrounds];
@@ -157,30 +165,88 @@ static const uint32_t bordersCategory =  0x1 << 3;
 
 - (void)addRunners {
 
-    SKSpriteNode *runner = [SKSpriteNode spriteNodeWithColor:[SKColor blueColor] size:screenCell];
-    runner.anchorPoint = CGPointMake(0.5, 0.5);
-    runner.zPosition = 2;
-    runner.position = CGPointMake(screenWidth / 2, screenHeight - screenCell.height);
-    runner.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:screenCell.width / 2];
+    _runnersArray = [[NSMutableArray alloc]init];
     
-    runner.physicsBody.affectedByGravity = NO;
-    runner.physicsBody.allowsRotation = NO;
-    runner.physicsBody.restitution = 0.0;
-    runner.physicsBody.friction = 0.0;
-    runner.physicsBody.dynamic = YES;
+    for (int i; i < 10; i++) {
+        SKSpriteNode *runner = [SKSpriteNode spriteNodeWithColor:[SKColor blueColor] size:screenCell];
+        runner.anchorPoint = CGPointMake(0.5, 0.5);
+        runner.zPosition = 2;
+        //runner.position = CGPointMake(screenWidth / 2, screenHeight - screenCell.height);
+        
+        runner.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:screenCell.width / 2];
+        runner.physicsBody.affectedByGravity = NO;
+        runner.physicsBody.allowsRotation = NO;
+        runner.physicsBody.restitution = 0.0;
+        runner.physicsBody.friction = 0.0;
+        runner.physicsBody.dynamic = YES;
+        
+        runner.physicsBody.categoryBitMask = runnersCategory;
+        runner.physicsBody.contactTestBitMask = itemsCategory;
+        runner.physicsBody.collisionBitMask = runnersCategory | bordersCategory;
+        
+        [self addChild:runner];
+        [_runnersArray addObject:runner];
+        NSLog(@"RunnersArray COUNT = %ld", [_runnersArray count]);
+    }
     
-    runner.physicsBody.categoryBitMask = runnersCategory;
-    runner.physicsBody.contactTestBitMask = itemsCategory;
-    runner.physicsBody.collisionBitMask = runnersCategory | bordersCategory;
-    
-    _runner = runner;
-    [self addChild:_runner];
-    
+    //Расставляем бегунов
+    [_runnersArray[0] setPosition:CGPointMake(screenCell.width / 2, screenHeight - screenCell.height * 1.5)];
+    [_runnersArray[1] setPosition:CGPointMake(screenCell.width * 1.5, screenHeight - screenCell.height * 2.5)];
+    [_runnersArray[2] setPosition:CGPointMake(screenCell.width * 2.5, screenHeight - screenCell.height * 1.5)];
+    [_runnersArray[3] setPosition:CGPointMake(screenCell.width * 3.5, screenHeight - screenCell.height * 2.5)];
+    [_runnersArray[4] setPosition:CGPointMake(screenCell.width * 4.5, screenHeight - screenCell.height * 1.5)];
+    [_runnersArray[5] setPosition:CGPointMake(screenCell.width * 5.5, screenHeight - screenCell.height * 2.5)];
+    [_runnersArray[6] setPosition:CGPointMake(screenCell.width * 6.5, screenHeight - screenCell.height * 1.5)];
+    [_runnersArray[7] setPosition:CGPointMake(screenCell.width * 7.5, screenHeight - screenCell.height * 2.5)];
+    [_runnersArray[8] setPosition:CGPointMake(screenCell.width * 8.5, screenHeight - screenCell.height * 1.5)];
+    [_runnersArray[9] setPosition:CGPointMake(screenCell.width * 9.5, screenHeight - screenCell.height * 2.5)];
 }
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    
+#pragma mark --- GAME LOGIC
+- (void)iterationCounterPlusOne {
+
+    _iterationCount = _iterationCount + 1;
+    NSLog(@"iteration count = %ld", _iterationCount);
 }
+
+- (void)changeDirectionOfrunner: (SKSpriteNode*)runner {
+
+    SKAction *runnerMoveAction = [[SKAction alloc]init];
+    _runnerChangeDirectionDuration = 0.8;
+    
+    int randomNumber = arc4random_uniform(4);//будет рандомное значение 0, 1, 2, 3
+    
+    switch (randomNumber) {
+        case 0:
+            NSLog(@"change direction of runner: UP");
+            runnerMoveAction = [SKAction moveByX:0
+                                               y:+screenCell.height
+                                        duration:_runnerChangeDirectionDuration];
+            break;
+        case 1:
+            NSLog(@"change direction of runner: RIGHT");
+            runnerMoveAction = [SKAction moveByX:+screenCell.width
+                                               y:0
+                                        duration:_runnerChangeDirectionDuration];
+            break;
+        case 2:
+            NSLog(@"change direction of runner: DOWN");
+            runnerMoveAction = [SKAction moveByX:0
+                                               y:-screenCell.height
+                                        duration:_runnerChangeDirectionDuration];
+
+            break;
+        case 3:
+            NSLog(@"change direction of runner: LEFT");
+            runnerMoveAction = [SKAction moveByX:-screenCell.width
+                                               y:0
+                                        duration:_runnerChangeDirectionDuration];
+            break;
+    }
+    
+    [runner runAction:runnerMoveAction];
+}
+
 
 #pragma mark --- UPDATE METHOD
 -(void)update:(CFTimeInterval)currentTime {
@@ -237,7 +303,28 @@ static const uint32_t bordersCategory =  0x1 << 3;
             
             node.position = bottomPosition;
             NSLog(@"\n\n THIRD NODE WAS PUT ON THE BOTTOM!\n\n");
+            
+            //+1 to iterationCounter
+            [self iterationCounterPlusOne];
+            
+            //Если мама ничего не кинула, то бегуны бегают в рандомных направлениях, если мама что-то кинула - все бегуны разбегаются от айтема
+            if (!_mamaThrewItem) {
+                NSLog(@"Runners are running in random directions");
+            for (SKSpriteNode *runner in _runnersArray) {
+                    [self changeDirectionOfrunner:runner];
+                }
+            }else{
+                NSLog(@"Runners are going from the item!");
+                //for (SKSpriteNode *runner in _runnersArray) {
+                  //  [self runnersGoAwayFromItem:runner itemPosition:_mamaThrownItem.position];
+                //}
+            }
+            
         }}];
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    
 }
 
 @end
