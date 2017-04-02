@@ -200,6 +200,10 @@ static const uint32_t bordersCategory =  0x1 << 3;
     [_runnersArray[7] setPosition:CGPointMake(screenCell.width * 7.5, screenHeight - screenCell.height * 2.5)];
     [_runnersArray[8] setPosition:CGPointMake(screenCell.width * 8.5, screenHeight - screenCell.height * 1.5)];
     [_runnersArray[9] setPosition:CGPointMake(screenCell.width * 9.5, screenHeight - screenCell.height * 2.5)];
+    
+    //Выделяем сыночка из остальных бегунов
+    [_runnersArray[5]setColor:[SKColor greenColor]];
+    [_runnersArray[5]setName:@"babyBoy"];
 }
 
 #pragma mark --- GAME LOGIC
@@ -261,6 +265,21 @@ static const uint32_t bordersCategory =  0x1 << 3;
         _timeSinceLast = 1.0/ 60.0;
         _lastUpdateTimeInterval = currentTime;
     }
+    
+#warning test runners change direction
+    //TEST RUNNERS
+    //Если мама ничего не кинула, то бегуны бегают в рандомных направлениях, если мама что-то кинула - все бегуны разбегаются от айтема
+    if (!_mamaThrewItem) {
+        NSLog(@"Runners are running in random directions");
+        for (SKSpriteNode *runner in _runnersArray) {
+            [self changeDirectionOfrunner:runner];
+        }
+    }else{
+        NSLog(@"Runners are going from the item!");
+        //for (SKSpriteNode *runner in _runnersArray) {
+        //  [self runnersGoAwayFromItem:runner itemPosition:_mamaThrownItem.position];
+        //}
+    }
 
     //BACKGROUND MOVEMENT
     
@@ -307,6 +326,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
             //+1 to iterationCounter
             [self iterationCounterPlusOne];
             
+            /*
             //Если мама ничего не кинула, то бегуны бегают в рандомных направлениях, если мама что-то кинула - все бегуны разбегаются от айтема
             if (!_mamaThrewItem) {
                 NSLog(@"Runners are running in random directions");
@@ -319,6 +339,8 @@ static const uint32_t bordersCategory =  0x1 << 3;
                   //  [self runnersGoAwayFromItem:runner itemPosition:_mamaThrownItem.position];
                 //}
             }
+            
+            */
             
         }}];
 }
