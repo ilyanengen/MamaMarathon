@@ -53,6 +53,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     NSInteger _iterationCount; //+1 on every 3rd background
     
     BOOL _mamaThrewItem;
+    SKNode *_mamaSelectedItem;
 }
 
 - (void)didMoveToView:(SKView *)view {
@@ -68,6 +69,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     //устанавливаем начальный статус
     _mamaThrewItem = NO;
+    _mamaSelectedItem = nil;
     
     [self addRunners];
     [self addHUD];
@@ -432,13 +434,60 @@ static const uint32_t bordersCategory =  0x1 << 3;
     CGPoint location = [touch locationInNode:self];
     SKNode *node = [self nodeAtPoint:location];
     
+    SKAction *fadeOutAction = [SKAction fadeAlphaTo:0.3 duration:0.3];
+    SKAction *fadeInAction = [SKAction fadeAlphaTo:1 duration:0.3];
+    
     if ([node.name isEqualToString:@"bananaButton"]) {
-    //
+        
+        NSLog(@"\n\nBANANA BUTTON IS PRESSED!\n\n");
+        if (_mamaSelectedItem != nil) {
+            [_mamaSelectedItem runAction:fadeInAction];
+            _mamaSelectedItem = node;
+            [node runAction:fadeOutAction];
+        }else{
+            _mamaSelectedItem = node;
+        }
+    
+    } else if ([node.name isEqualToString:@"oilButton"]) {
+
+        NSLog(@"\n\nOIL BUTTON IS PRESSED!\n\n");
+        if (_mamaSelectedItem != nil) {
+            [_mamaSelectedItem runAction:fadeInAction];
+            _mamaSelectedItem = node;
+            [node runAction:fadeOutAction];
+        }else{
+            _mamaSelectedItem = node;
+        }
+
+    } else if ([node.name isEqualToString:@"waterButton"]){
+        
+        NSLog(@"\n\nWATER BUTTON IS PRESSED!\n\n");
+        if (_mamaSelectedItem != nil) {
+            [_mamaSelectedItem runAction:fadeInAction];
+            _mamaSelectedItem = node;
+            [node runAction:fadeOutAction];
+        }else{
+            _mamaSelectedItem = node;
+        }
+
+    } else if ([node.name isEqualToString:@"hamburgerButton"]){
+        
+        NSLog(@"\n\nHAMBURGER BUTTON IS PRESSED!\n\n");
+        if (_mamaSelectedItem != nil) {
+            [_mamaSelectedItem runAction:fadeInAction];
+            _mamaSelectedItem = node;
+            [node runAction:fadeOutAction];
+        }else{
+            _mamaSelectedItem = node;
+        }
+
     }}
 
-#pragma mark - HANDLE ITEM BUTTONS
+- (void)fadeInFadeOutNode:(SKNode *) node {
 
+}
 
+#pragma mark - CONTACT DELEGATE
 - (void)didBeginContact:(SKPhysicsContact *)contact {
     
     SKNode *bodyANode = contact.bodyA.node;
