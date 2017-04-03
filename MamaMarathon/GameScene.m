@@ -9,17 +9,11 @@
 #import "GameScene.h"
 #import "Background.h"
 
-typedef NS_ENUM(NSUInteger, mamaSelectedItemList) {
-    mamaSelectedItemBanana,
-    mamaSelectedItemOil,
-    mamaSelectedItemWater,
-    mamaSelectedItemHamburger
-};
-
 //Physics bodies collisions and contact bitMasks
-static const uint32_t runnersCategory =  0x1 << 0;
-static const uint32_t itemsCategory =  0x1 << 1;
-static const uint32_t bordersCategory =  0x1 << 2;
+static const uint32_t pickupWithMamaCategory =  0x1 << 0;
+static const uint32_t runnersCategory =  0x1 << 1;
+static const uint32_t itemsCategory =  0x1 << 2;
+static const uint32_t bordersCategory =  0x1 << 3;
 
 @implementation GameScene {
     
@@ -47,7 +41,8 @@ static const uint32_t bordersCategory =  0x1 << 2;
     SKSpriteNode *_waterNode;
     SKSpriteNode *_hamburgerNode;
     
-    //Buttons
+    //HUD
+    SKSpriteNode *_itemsBar;
     SKSpriteNode *_bananaButton;
     SKSpriteNode *_oilButton;
     SKSpriteNode *_waterButton;
@@ -57,12 +52,7 @@ static const uint32_t bordersCategory =  0x1 << 2;
     NSInteger _backgroundMoveSpeed; //define the background move speed in pixels per frame.
     NSInteger _iterationCount; //+1 on every 3rd background
     
-    
-    NSTimeInterval _runnerChangeDirectionDuration;
-    
-    BOOL _isMamaSelectedItem;
     BOOL _mamaThrewItem;
-    mamaSelectedItemList mamaSelectedItem;
 }
 
 - (void)didMoveToView:(SKView *)view {
@@ -78,7 +68,6 @@ static const uint32_t bordersCategory =  0x1 << 2;
     
     //устанавливаем начальный статус
     _mamaThrewItem = NO;
-    _isMamaSelectedItem = NO;
     
     [self addRunners];
     [self addHUD];
@@ -105,66 +94,72 @@ static const uint32_t bordersCategory =  0x1 << 2;
     itemsBar.anchorPoint = CGPointMake(0.5, 0.5);
     itemsBar.position = CGPointMake(screenWidth / 2, itemsBar.size.height / 2);
     itemsBar.zPosition = 11;
-    [HUDnode addChild:itemsBar];
+    _itemsBar = itemsBar;
+    [HUDnode addChild:_itemsBar];
+    
+    //create distanceBar on HUD node
+    CGFloat distanceBarHeight = HUDnode.size.height - _itemsBar.size.height;
+    SKSpriteNode *distanceBar = [SKSpriteNode spriteNodeWithColor:[SKColor yellowColor] size:CGSizeMake(screenWidth, distanceBarHeight)];
+    distanceBar.anchorPoint =CGPointZero;
+    distanceBar.position = CGPointMake(0, _itemsBar.size.height);
+    distanceBar.zPosition = 11;
+    [HUDnode addChild:distanceBar];
     
     //BUTTONS on itemsBar
+    [self addButtons];
+    }
+
+- (void)addButtons {
+
     CGSize buttonSize = CGSizeMake(screenCell.width * 2, screenCell.height * 2);
     //banana button
-   
+    
     SKSpriteNode *bananaButton = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor]
                                                               size:buttonSize];
     bananaButton.zPosition = 12;
     bananaButton.anchorPoint = CGPointMake(0.5, 0.5);
     bananaButton.position = CGPointMake(-(screenWidth / 8 * 3), 0);
     _bananaButton = bananaButton;
-    [itemsBar addChild:_bananaButton];
+    [_itemsBar addChild:_bananaButton];
     SKSpriteNode *bananaImageOnButton = [SKSpriteNode spriteNodeWithImageNamed:@"banana64.png"];
     bananaImageOnButton.name = @"bananaButton";
     [_bananaButton addChild:bananaImageOnButton];
     
     //oil button
     SKSpriteNode *oilButton = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor]
-                                                              size:buttonSize];
+                                                           size:buttonSize];
     oilButton.zPosition = 12;
     oilButton.anchorPoint = CGPointMake(0.5, 0.5);
     oilButton.position = CGPointMake(- screenWidth / 8, 0);
     _oilButton = oilButton;
-    [itemsBar addChild:_oilButton];
+    [_itemsBar addChild:_oilButton];
     SKSpriteNode *oilImageOnButton = [SKSpriteNode spriteNodeWithImageNamed:@"oil64.png"];
     oilImageOnButton.name = @"oilButton";
     [_oilButton addChild:oilImageOnButton];
     
     //water button
     SKSpriteNode *waterButton = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor]
-                                                           size:buttonSize];
+                                                             size:buttonSize];
     waterButton.zPosition = 12;
     waterButton.anchorPoint = CGPointMake(0.5, 0.5);
     waterButton.position = CGPointMake(screenWidth / 8 , 0);
     _waterButton = waterButton;
-    [itemsBar addChild:_waterButton];
+    [_itemsBar addChild:_waterButton];
     SKSpriteNode *waterImageOnButton = [SKSpriteNode spriteNodeWithImageNamed:@"water64.png"];
     waterImageOnButton.name = @"waterButton";
     [_waterButton addChild:waterImageOnButton];
-
+    
     //hamburger button
     SKSpriteNode *hamburgerButton = [SKSpriteNode spriteNodeWithColor:[SKColor lightGrayColor]
-                                                             size:buttonSize];
+                                                                 size:buttonSize];
     hamburgerButton.zPosition = 12;
     hamburgerButton.anchorPoint = CGPointMake(0.5, 0.5);
     hamburgerButton.position = CGPointMake(screenWidth / 8 * 3, 0);
     _hamburgerButton = hamburgerButton;
-    [itemsBar addChild:_hamburgerButton];
+    [_itemsBar addChild:_hamburgerButton];
     SKSpriteNode *hamburgerImageOnButton = [SKSpriteNode spriteNodeWithImageNamed:@"hamburger64.png"];
-     hamburgerImageOnButton.name = @"hamburgerButton";
+    hamburgerImageOnButton.name = @"hamburgerButton";
     [_hamburgerButton addChild:hamburgerImageOnButton];
-
-    //create distanceBar on HUD node
-    CGFloat distanceBarHeight = HUDnode.size.height - itemsBar.size.height;
-    SKSpriteNode *distanceBar = [SKSpriteNode spriteNodeWithColor:[SKColor yellowColor] size:CGSizeMake(screenWidth, distanceBarHeight)];
-    distanceBar.anchorPoint =CGPointZero;
-    distanceBar.position = CGPointMake(0, itemsBar.size.height);
-    distanceBar.zPosition = 11;
-    [HUDnode addChild:distanceBar];
 }
 
 - (void)addBackgrounds{
@@ -231,7 +226,6 @@ static const uint32_t bordersCategory =  0x1 << 2;
     mama.anchorPoint = CGPointMake(0.5,0.5);
     mama.position = CGPointMake(0, screenCell.height);
     mama.zPosition = 3;
-    //mama.position
     [_pickupWithMama addChild:mama];
 }
 
@@ -239,14 +233,13 @@ static const uint32_t bordersCategory =  0x1 << 2;
 
     _runnersArray = [NSMutableArray array];
     
-    //создаем текстуры для бегунов
+    //создаем анимацию для бегунов
     SKTexture *runnerTexture1 = [SKTexture textureWithImageNamed:@"runner1.png"];
     SKTexture *runnerTexture2 = [SKTexture textureWithImageNamed:@"runner2.png"];
     NSArray *runnerTextures = [NSArray arrayWithObjects:runnerTexture1,runnerTexture2, nil];
-    //создаем анимацию бегунов из текстур
     SKAction *runnerAnimationAction = [SKAction animateWithTextures:runnerTextures timePerFrame:0.1];
     
-    //создаем сыночка
+    //создаем анимацию для сыночка
     SKTexture *sonTexture1 = [SKTexture textureWithImageNamed:@"son1.png"];
     SKTexture *sonTexture2 = [SKTexture textureWithImageNamed:@"son2.png"];
     NSArray *sonTextures = [NSArray arrayWithObjects:sonTexture1,sonTexture2, nil];
@@ -257,8 +250,6 @@ static const uint32_t bordersCategory =  0x1 << 2;
         SKSpriteNode *runner = [SKSpriteNode spriteNodeWithColor:[SKColor blueColor] size:screenCell];
         runner.anchorPoint = CGPointMake(0.5, 0.5);
         runner.zPosition = 2;
-        runner.name = @"runner";
-        
         runner.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:screenCell.width / 2];
         runner.physicsBody.affectedByGravity = NO;
         runner.physicsBody.allowsRotation = NO;
@@ -268,9 +259,7 @@ static const uint32_t bordersCategory =  0x1 << 2;
         
         runner.physicsBody.categoryBitMask = runnersCategory;
         runner.physicsBody.contactTestBitMask = itemsCategory;
-        runner.physicsBody.collisionBitMask = runnersCategory | bordersCategory | itemsCategory;
-        
-        //[runner runAction:[SKAction repeatActionForever:runnerAnimationAction]];
+        runner.physicsBody.collisionBitMask = runnersCategory | bordersCategory;
         
         [self addChild:runner];
         [_runnersArray addObject:runner];
@@ -301,7 +290,7 @@ static const uint32_t bordersCategory =  0x1 << 2;
     [_runnersArray[9] runAction:[SKAction repeatActionForever:runnerAnimationAction]];
     
     //Выделяем сыночка из остальных бегунов
-    //[_runnersArray[5] setName:@"son"];
+    [_runnersArray[5] setName:@"son"];
     [_runnersArray[5] runAction:[SKAction repeatActionForever:sonAnimationAction]];
 }
 
@@ -315,7 +304,7 @@ static const uint32_t bordersCategory =  0x1 << 2;
 - (void)changeDirectionOfrunner: (SKSpriteNode*)runner {
 
     SKAction *runnerMoveAction = [[SKAction alloc]init];
-    _runnerChangeDirectionDuration = 3;
+    NSTimeInterval runnerChangeDirectionDuration = 3;
     
     int randomNumber = arc4random_uniform(4);//будет рандомное значение 0, 1, 2, 3
     
@@ -324,32 +313,31 @@ static const uint32_t bordersCategory =  0x1 << 2;
             //NSLog(@"change direction of runner: UP");
             runnerMoveAction = [SKAction moveByX:0
                                                y:+screenCell.height/10
-                                        duration:_runnerChangeDirectionDuration];
+                                        duration:runnerChangeDirectionDuration];
             break;
         case 1:
             //NSLog(@"change direction of runner: RIGHT");
             runnerMoveAction = [SKAction moveByX:+screenCell.width/10
                                                y:0
-                                        duration:_runnerChangeDirectionDuration];
+                                        duration:runnerChangeDirectionDuration];
             break;
         case 2:
             //NSLog(@"change direction of runner: DOWN");
             runnerMoveAction = [SKAction moveByX:0
                                                y:-screenCell.height/10
-                                        duration:_runnerChangeDirectionDuration];
+                                        duration:runnerChangeDirectionDuration];
 
             break;
         case 3:
             //NSLog(@"change direction of runner: LEFT");
             runnerMoveAction = [SKAction moveByX:-screenCell.width/10
                                                y:0
-                                        duration:_runnerChangeDirectionDuration];
+                                        duration:runnerChangeDirectionDuration];
             break;
     }
     
     [runner runAction:runnerMoveAction];
 }
-
 
 #pragma mark --- UPDATE METHOD
 -(void)update:(CFTimeInterval)currentTime {
@@ -371,7 +359,7 @@ static const uint32_t bordersCategory =  0x1 << 2;
         for (SKSpriteNode *runner in _runnersArray) {
             [self changeDirectionOfrunner:runner];
         }
-    }else{
+    } else {
         NSLog(@"Runners are going from the item!");
         //for (SKSpriteNode *runner in _runnersArray) {
         //  [self runnersGoAwayFromItem:runner itemPosition:_mamaThrownItem.position];
@@ -423,11 +411,10 @@ static const uint32_t bordersCategory =  0x1 << 2;
             
             //+1 to iterationCounter
             [self iterationCounterPlusOne];
-            
         }}];
 }
 
-#pragma mark --- TOUCHES
+#pragma mark - TOUCHES
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     
     UITouch *touch = [touches anyObject];
@@ -435,102 +422,11 @@ static const uint32_t bordersCategory =  0x1 << 2;
     SKNode *node = [self nodeAtPoint:location];
     
     if ([node.name isEqualToString:@"bananaButton"]) {
-    
-        NSLog(@"\n\n BANANA BUTTON \n\n");
-        _isMamaSelectedItem = YES;
-        [self handleBananaButton];
-        
-    }else if ([node.name isEqualToString:@"oilButton"]) {
-    
-        [self handleOilButton];
-        
-    }else if ([node.name isEqualToString:@"waterButton"]) {
-    
-        [self handleWaterButton];
-    
-    } else if ([node.name isEqualToString:@"hamburgerButton"]) {
-    
-        [self handleHamburgerButton];
-        
-        //ЕСЛИ ЮЗЕР НАЖАЛ НА БЭКГРАУНД
-    } else if (([node.name isEqualToString:@"first background"]) || ([node.name isEqualToString:@"second background"]) || ([node.name isEqualToString:@"third background"])){
-    
-        if (!_isMamaSelectedItem) {
-            NSLog(@"\n\n USER TOUCHED BACKGROUND BEFORE ITEM BUTTON!\n\n");
-        } else if (_isMamaSelectedItem) {
-            NSLog(@"\n\n USER TOUCHED BACKGROUND AFTER ITEM BUTTON!\n\n");
-            
-            SKSpriteNode *bananaNode = [SKSpriteNode spriteNodeWithImageNamed:@"banana32.png"];
-            
-            bananaNode.anchorPoint = CGPointMake(0.5, 0.5);
-            bananaNode.zPosition = 2;
-            bananaNode.name = @"bananaNode";
-            
-            bananaNode.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:bananaNode.size];
-            
-            bananaNode.physicsBody.affectedByGravity = NO;
-            bananaNode.physicsBody.allowsRotation = NO;
-            bananaNode.physicsBody.restitution = 0.0;
-            bananaNode.physicsBody.friction = 0.0;
-            bananaNode.physicsBody.dynamic = YES;
-            
-            bananaNode.physicsBody.categoryBitMask = itemsCategory;
-            bananaNode.physicsBody.contactTestBitMask = runnersCategory;
-            bananaNode.physicsBody.collisionBitMask = bordersCategory | runnersCategory;
-            
-            bananaNode.position = location;
-            
-            _bananaNode = bananaNode;
-            [_thirdBackground addChild:_bananaNode];
-        }
+    //
     }}
 
-#pragma mark --- HANDLE ITEM BUTTONS
+#pragma mark - HANDLE ITEM BUTTONS
 
-- (void)handleBananaButton {
-    
-    //Мама выбрала айтем
-    mamaSelectedItem = mamaSelectedItemBanana;
-
-    /*
-    NSLog(@"\n\nhandleBananaButton STARTS\n\n");
-    SKSpriteNode *bananaNode = [SKSpriteNode spriteNodeWithImageNamed:@"banana32.png"];
-    
-    bananaNode.anchorPoint = CGPointMake(0.5, 0.5);
-    bananaNode.zPosition = 2;
-    bananaNode.name = @"bananaNode";
-    
-    bananaNode.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:bananaNode.size];
-    
-    bananaNode.physicsBody.affectedByGravity = NO;
-    bananaNode.physicsBody.allowsRotation = NO;
-    bananaNode.physicsBody.restitution = 0.0;
-    bananaNode.physicsBody.friction = 0.0;
-    bananaNode.physicsBody.dynamic = NO;
-    
-    bananaNode.physicsBody.categoryBitMask = itemsCategory;
-    bananaNode.physicsBody.contactTestBitMask = runnersCategory;
-    bananaNode.physicsBody.collisionBitMask = bordersCategory;
-    
-    _bananaNode = bananaNode;
-    [_thirdBackground addChild:_bananaNode];
-     */
-}
-
-- (void)handleOilButton{
-    
-mamaSelectedItem = mamaSelectedItemOil;
-}
-    
-- (void)handleWaterButton{
-
-mamaSelectedItem = mamaSelectedItemWater;
-}
-
-- (void)handleHamburgerButton{
-
-mamaSelectedItem = mamaSelectedItemHamburger;
-}
 
 - (void)didBeginContact:(SKPhysicsContact *)contact {
     
