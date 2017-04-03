@@ -218,6 +218,17 @@ static const uint32_t bordersCategory =  0x1 << 3;
     pickup.anchorPoint = CGPointMake(0.5, 0.5);
     pickup.zPosition = 2;
     pickup.position = CGPointMake(screenWidth / 2, HUDheightProperty);
+    
+    pickup.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:pickup.size];
+    pickup.physicsBody.affectedByGravity = NO;
+    pickup.physicsBody.allowsRotation = NO;
+    pickup.physicsBody.restitution = 0.0;
+    pickup.physicsBody.friction = 0.0;
+    pickup.physicsBody.dynamic = YES;
+    
+    pickup.physicsBody.categoryBitMask = pickupWithMamaCategory;
+    pickup.physicsBody.collisionBitMask = runnersCategory | bordersCategory;
+
     _pickupWithMama = pickup;
     [self addChild:_pickupWithMama];
     
@@ -259,7 +270,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
         
         runner.physicsBody.categoryBitMask = runnersCategory;
         runner.physicsBody.contactTestBitMask = itemsCategory;
-        runner.physicsBody.collisionBitMask = runnersCategory | bordersCategory;
+        runner.physicsBody.collisionBitMask = runnersCategory | bordersCategory | pickupWithMamaCategory;
         
         [self addChild:runner];
         [_runnersArray addObject:runner];
