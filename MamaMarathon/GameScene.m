@@ -434,57 +434,31 @@ static const uint32_t bordersCategory =  0x1 << 3;
     CGPoint location = [touch locationInNode:self];
     SKNode *node = [self nodeAtPoint:location];
     
-    SKAction *fadeOutAction = [SKAction fadeAlphaTo:0.3 duration:0.3];
-    SKAction *fadeInAction = [SKAction fadeAlphaTo:1 duration:0.3];
-    
     if ([node.name isEqualToString:@"bananaButton"]) {
-        
-        NSLog(@"\n\nBANANA BUTTON IS PRESSED!\n\n");
-        if (_mamaSelectedItem != nil) {
-            [_mamaSelectedItem runAction:fadeInAction];
-            _mamaSelectedItem = node;
-            [node runAction:fadeOutAction];
-        }else{
-            _mamaSelectedItem = node;
-        }
-    
+        [self fadeInFadeOutNode:node];
     } else if ([node.name isEqualToString:@"oilButton"]) {
-
-        NSLog(@"\n\nOIL BUTTON IS PRESSED!\n\n");
-        if (_mamaSelectedItem != nil) {
-            [_mamaSelectedItem runAction:fadeInAction];
-            _mamaSelectedItem = node;
-            [node runAction:fadeOutAction];
-        }else{
-            _mamaSelectedItem = node;
-        }
-
-    } else if ([node.name isEqualToString:@"waterButton"]){
-        
-        NSLog(@"\n\nWATER BUTTON IS PRESSED!\n\n");
-        if (_mamaSelectedItem != nil) {
-            [_mamaSelectedItem runAction:fadeInAction];
-            _mamaSelectedItem = node;
-            [node runAction:fadeOutAction];
-        }else{
-            _mamaSelectedItem = node;
-        }
-
-    } else if ([node.name isEqualToString:@"hamburgerButton"]){
-        
-        NSLog(@"\n\nHAMBURGER BUTTON IS PRESSED!\n\n");
-        if (_mamaSelectedItem != nil) {
-            [_mamaSelectedItem runAction:fadeInAction];
-            _mamaSelectedItem = node;
-            [node runAction:fadeOutAction];
-        }else{
-            _mamaSelectedItem = node;
-        }
-
-    }}
+        [self fadeInFadeOutNode:node];
+    } else if ([node.name isEqualToString:@"waterButton"]) {
+        [self fadeInFadeOutNode:node];
+    } else if ([node.name isEqualToString:@"hamburgerButton"]) {
+        [self fadeInFadeOutNode:node];
+    }
+}
 
 - (void)fadeInFadeOutNode:(SKNode *) node {
 
+    SKAction *fadeOutAction = [SKAction fadeAlphaTo:0.3 duration:0.3];
+    SKAction *fadeInAction = [SKAction fadeAlphaTo:1 duration:0.3];
+
+    NSLog(@"\n\n%@ IS PRESSED!\n\n",node.name);
+    if (_mamaSelectedItem != nil) {
+        [_mamaSelectedItem runAction:fadeInAction];
+        _mamaSelectedItem = node;
+        [node runAction:fadeOutAction];
+    }else{
+        _mamaSelectedItem = node;
+        [node runAction:fadeOutAction];
+    }
 }
 
 #pragma mark - CONTACT DELEGATE
