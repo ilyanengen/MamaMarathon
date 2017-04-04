@@ -43,11 +43,6 @@ static const uint32_t bordersCategory =  0x1 << 3;
     SKSpriteNode *_pickupWithMama;
     NSMutableArray *_runnersArray;
     
-    SKSpriteNode *_bananaItem;
-    SKSpriteNode *_oilItem;
-    SKSpriteNode *_waterItem;
-    SKSpriteNode *_hamburgerItem;
-    
     //HUD
     SKSpriteNode *_itemsBar;
     //Buttons
@@ -321,6 +316,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
 - (SKSpriteNode *)createBanana {
 
     SKSpriteNode *bananaNode = [SKSpriteNode spriteNodeWithImageNamed:@"banana32.png"];
+    bananaNode.name = @"banana";
     bananaNode.zPosition = 2;
     bananaNode.anchorPoint = CGPointMake(0.5, 0.5);
     
@@ -341,6 +337,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
 - (SKSpriteNode *)createOil {
 
     SKSpriteNode *oilNode = [SKSpriteNode spriteNodeWithImageNamed:@"oil64.png"];
+    oilNode.name = @"oil";
     oilNode.zPosition = 2;
     oilNode.anchorPoint = CGPointMake(0.5, 0.5);
     
@@ -361,6 +358,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
 - (SKSpriteNode *)createWater {
 
     SKSpriteNode *waterNode = [SKSpriteNode spriteNodeWithImageNamed:@"water32.png"];
+    waterNode.name = @"water";
     waterNode.zPosition = 2;
     waterNode.anchorPoint = CGPointMake(0.5, 0.5);
     
@@ -381,6 +379,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
 - (SKSpriteNode *)createHamburger {
 
     SKSpriteNode *hamburgerNode = [SKSpriteNode spriteNodeWithImageNamed:@"hamburger64.png"];
+    hamburgerNode.name = @"hamburger";
     hamburgerNode.zPosition = 2;
     hamburgerNode.anchorPoint = CGPointMake(0.5, 0.5);
     
@@ -584,8 +583,20 @@ static const uint32_t bordersCategory =  0x1 << 3;
             break;
     }
     
-    itemToThrow.position = CGPointMake(xPosition, screenHeight / 2);
+    //start position
+    itemToThrow.position = CGPointMake(_pickupWithMama.position.x, _pickupWithMama.position.y * 1.5);
     [self addChild:itemToThrow];
+    //end position
+    CGPoint endPosition = CGPointMake(xPosition, _pickupWithMama.position.y + _pickupWithMama.size.height * 0.75);
+    //Throw Animation Action
+    SKAction *throwAction = [SKAction moveTo:endPosition duration:0.5];
+    [itemToThrow runAction:throwAction];
+    //Going to Upper edge of screen
+    NSTimeInterval timeInterval = (double)(screenHeight * 1.5 / _backgroundMoveSpeed);
+    SKAction *goingUpAction = [SKAction moveBy:CGVectorMake(0, screenHeight * 1.5) duration:timeInterval];
+    [itemToThrow runAction:goingUpAction completion:^{
+        [itemToThrow removeFromParent]; //remove from parent after reaching performing action
+    }];
 }
 
 #pragma mark - CONTACT DELEGATE
