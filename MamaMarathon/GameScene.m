@@ -62,6 +62,8 @@ static const uint32_t bordersCategory =  0x1 << 3;
 
 - (void)didMoveToView:(SKView *)view {
     
+    self.physicsWorld.contactDelegate = self;
+    
     //Get screen size to use later
     screenWidth = view.bounds.size.width;
     screenHeight = view.bounds.size.height;
@@ -606,14 +608,15 @@ static const uint32_t bordersCategory =  0x1 << 3;
     SKNode *bodyBNode = contact.bodyB.node;
     
     NSLog(@"Body A: %@  Body B: %@",bodyANode.name, bodyBNode.name);
+      NSLog(@"\n\nCONTACT DELEGATE!!!!\n\n");
     
-    /*
-    if ([bodyANode.name isEqualToString:@"runner"] && [bodyBNode.name isEqualToString:@"bananaNode"] ){
+    /*if ([bodyANode.name isEqualToString:@"runner"] && [bodyBNode.name isEqualToString:@"runner"] ){
         
-        [bodyANode removeFromParent];
-    } else if ([bodyBNode.name isEqualToString:@"runner"] && [bodyANode.name isEqualToString:@"bananaNode"]) {
+        NSLog(@"\n\nCONTACT DELEGATE!!!!\n\n");
+        
+    } else if ([bodyBNode.name isEqualToString:@"runner"] && [bodyANode.name isEqualToString:@"runner"]) {
     
-        [bodyBNode removeFromParent];
+        NSLog(@"\n\nCONTACT DELEGATE!!!!\n\n");
     }
      */
 }

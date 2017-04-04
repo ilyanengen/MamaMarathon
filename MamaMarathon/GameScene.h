@@ -10,4 +10,6 @@
 
 @interface GameScene : SKScene <SKPhysicsContactDelegate>
 
+@property(nonatomic, assign) id<SKPhysicsContactDelegate> contactDelegate;
+
 @end
