@@ -58,6 +58,9 @@ static const uint32_t bordersCategory =  0x1 << 3;
     BOOL _mamaThrewItem;
     SKNode *_mamaPushedButton;
     mamaSelectedItem selectedItem;
+#warning ИСПОЛЬЗОВАТЬ ЭТИ айвары чтобы запрограммировать поведение бегунов
+    SKSpriteNode *_runnersShouldAvoidItem;
+    SKSpriteNode *_runnersShouldCatchItem;
 }
 
 - (void)didMoveToView:(SKView *)view {
@@ -268,6 +271,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     //создаем бегунов и добавляем в массив
     for (int i; i < 10; i++) {
         SKSpriteNode *runner = [SKSpriteNode spriteNodeWithColor:[SKColor blueColor] size:screenCell];
+        runner.name = @"runner";
         runner.anchorPoint = CGPointMake(0.5, 0.5);
         runner.zPosition = 2;
         runner.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:screenCell.width / 2];
@@ -593,6 +597,15 @@ static const uint32_t bordersCategory =  0x1 << 3;
     //Throw Animation Action
     SKAction *throwAction = [SKAction moveTo:endPosition duration:0.5];
     [itemToThrow runAction:throwAction];
+
+#warning Потестить! Поведение бегунов ---- дописать в методе update!!!
+    //назначаем айвары, на которые будут реагировать бегуны
+    if (([itemToThrow.name isEqualToString:@"banana"]) || ([itemToThrow.name isEqualToString:@"oil"]))  {
+        _runnersShouldAvoidItem = itemToThrow;
+    } else if (([itemToThrow.name isEqualToString:@"water"]) || ([itemToThrow.name isEqualToString:@"hamburger"])) {
+        _runnersShouldCatchItem = itemToThrow;
+    }
+    
     //Going to Upper edge of screen
     NSTimeInterval timeInterval = (double)(screenHeight * 1.5 / _backgroundMoveSpeed);
     SKAction *goingUpAction = [SKAction moveBy:CGVectorMake(0, screenHeight * 1.5) duration:timeInterval];
