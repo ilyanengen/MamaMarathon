@@ -36,13 +36,14 @@ static const uint32_t bordersCategory =  0x1 << 3;
     SKSpriteNode *_pickupWithMama;
     NSMutableArray *_runnersArray;
     
-    SKSpriteNode *_bananaNode;
-    SKSpriteNode *_oilNode;
-    SKSpriteNode *_waterNode;
-    SKSpriteNode *_hamburgerNode;
+    SKSpriteNode *_bananaItem;
+    SKSpriteNode *_oilItem;
+    SKSpriteNode *_waterItem;
+    SKSpriteNode *_hamburgerItem;
     
     //HUD
     SKSpriteNode *_itemsBar;
+    //Buttons
     SKSpriteNode *_bananaButton;
     SKSpriteNode *_oilButton;
     SKSpriteNode *_waterButton;
@@ -53,7 +54,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     NSInteger _iterationCount; //+1 on every 3rd background
     
     BOOL _mamaThrewItem;
-    SKNode *_mamaSelectedItem;
+    SKNode *_mamaPushedButton;
 }
 
 - (void)didMoveToView:(SKView *)view {
@@ -69,13 +70,14 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     //устанавливаем начальный статус
     _mamaThrewItem = NO;
-    _mamaSelectedItem = nil;
+    _mamaPushedButton = nil;
     
     [self addRunners];
     [self addHUD];
     [self addBackgrounds];
     [self addBorders];
     [self addPickupWithMama];
+    [self createItems];
 }
 
 #pragma mark - Add objects on scene
@@ -307,6 +309,27 @@ static const uint32_t bordersCategory =  0x1 << 3;
     [_runnersArray[5] runAction:[SKAction repeatActionForever:sonAnimationAction]];
 }
 
+- (void)createItems {
+
+    SKSpriteNode *bananaNode = [SKSpriteNode spriteNodeWithImageNamed:@"banana32.png"];
+    bananaNode.zPosition = 2;
+    bananaNode.anchorPoint = CGPointMake(0.5, 0.5);
+    
+    bananaNode.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius: bananaNode.size.width / 2];
+    bananaNode.physicsBody.affectedByGravity = NO;
+    bananaNode.physicsBody.allowsRotation = YES;
+    bananaNode.physicsBody.restitution = 0.0;
+    bananaNode.physicsBody.friction = 0.0;
+    bananaNode.physicsBody.dynamic = YES;
+    
+    bananaNode.physicsBody.categoryBitMask = itemsCategory;
+    bananaNode.physicsBody.contactTestBitMask = runnersCategory;
+    bananaNode.physicsBody.collisionBitMask = bordersCategory;
+    
+    bananaNode = _bananaItem;
+    //осталось добавить на вьюху и указать position
+}
+
 #pragma mark --- GAME LOGIC
 - (void)iterationCounterPlusOne {
 
@@ -339,7 +362,6 @@ static const uint32_t bordersCategory =  0x1 << 3;
             runnerMoveAction = [SKAction moveByX:0
                                                y:-screenCell.height/10
                                         duration:runnerChangeDirectionDuration];
-
             break;
         case 3:
             //NSLog(@"change direction of runner: LEFT");
@@ -403,10 +425,8 @@ static const uint32_t bordersCategory =  0x1 << 3;
         if (node.position.y > screenHeight * 1.5) {
             
             CGPoint bottomPosition = CGPointMake(_firstBackground.position.x, _firstBackground.position.y - _firstBackground.size.height + 20);//пришлось отнимать по 10 чтобы не было видно стыков между каждыми 3мя картинками дороги
-            
             node.position = bottomPosition;
             NSLog(@"\n\n SECOND NODE WAS PUT ON THE BOTTOM!\n\n");
-            [_bananaNode removeFromParent];
         }}];
     
     //3rd background movement
@@ -442,6 +462,10 @@ static const uint32_t bordersCategory =  0x1 << 3;
         [self fadeInFadeOutNode:node];
     } else if ([node.name isEqualToString:@"hamburgerButton"]) {
         [self fadeInFadeOutNode:node];
+    
+    } else if (([node.name isEqualToString:@"first background"]) || ([node.name isEqualToString:@"second background"]) || ([node.name isEqualToString:@"third background"])) {
+    
+        NSLog(@"\n\nPlayer touched one of the background nodes\n\n");
     }
 }
 
@@ -451,12 +475,12 @@ static const uint32_t bordersCategory =  0x1 << 3;
     SKAction *fadeInAction = [SKAction fadeAlphaTo:1 duration:0.3];
 
     NSLog(@"\n\n%@ IS PRESSED!\n\n",node.name);
-    if (_mamaSelectedItem != nil) {
-        [_mamaSelectedItem runAction:fadeInAction];
-        _mamaSelectedItem = node;
+    if (_mamaPushedButton != nil) {
+        [_mamaPushedButton runAction:fadeInAction];
+        _mamaPushedButton = node;
         [node runAction:fadeOutAction];
     }else{
-        _mamaSelectedItem = node;
+        _mamaPushedButton = node;
         [node runAction:fadeOutAction];
     }
 }
@@ -469,6 +493,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     NSLog(@"Body A: %@  Body B: %@",bodyANode.name, bodyBNode.name);
     
+    /*
     if ([bodyANode.name isEqualToString:@"runner"] && [bodyBNode.name isEqualToString:@"bananaNode"] ){
         
         [bodyANode removeFromParent];
@@ -476,6 +501,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
         [bodyBNode removeFromParent];
     }
+     */
 }
 
 
