@@ -317,6 +317,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     [_runnersArray[5] runAction:[SKAction repeatActionForever:sonAnimationAction]];
 }
 
+#pragma mark - ITEMS OF MAMA
 - (SKSpriteNode *)createBanana {
 
     SKSpriteNode *bananaNode = [SKSpriteNode spriteNodeWithImageNamed:@"banana32.png"];
@@ -335,7 +336,66 @@ static const uint32_t bordersCategory =  0x1 << 3;
     bananaNode.physicsBody.collisionBitMask = bordersCategory;
     
     return bananaNode;
-#warning Добавить методы для остальных items : oil, water, hamburger
+}
+
+- (SKSpriteNode *)createOil {
+
+    SKSpriteNode *oilNode = [SKSpriteNode spriteNodeWithImageNamed:@"oil64.png"];
+    oilNode.zPosition = 2;
+    oilNode.anchorPoint = CGPointMake(0.5, 0.5);
+    
+    oilNode.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius: oilNode.size.width / 2];
+    oilNode.physicsBody.affectedByGravity = NO;
+    oilNode.physicsBody.allowsRotation = YES;
+    oilNode.physicsBody.restitution = 0.0;
+    oilNode.physicsBody.friction = 0.0;
+    oilNode.physicsBody.dynamic = YES;
+    
+    oilNode.physicsBody.categoryBitMask = itemsCategory;
+    oilNode.physicsBody.contactTestBitMask = runnersCategory;
+    oilNode.physicsBody.collisionBitMask = bordersCategory;
+    
+    return oilNode;
+}
+
+- (SKSpriteNode *)createWater {
+
+    SKSpriteNode *waterNode = [SKSpriteNode spriteNodeWithImageNamed:@"water32.png"];
+    waterNode.zPosition = 2;
+    waterNode.anchorPoint = CGPointMake(0.5, 0.5);
+    
+    waterNode.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius: waterNode.size.width / 2];
+    waterNode.physicsBody.affectedByGravity = NO;
+    waterNode.physicsBody.allowsRotation = YES;
+    waterNode.physicsBody.restitution = 0.0;
+    waterNode.physicsBody.friction = 0.0;
+    waterNode.physicsBody.dynamic = YES;
+    
+    waterNode.physicsBody.categoryBitMask = itemsCategory;
+    waterNode.physicsBody.contactTestBitMask = runnersCategory;
+    waterNode.physicsBody.collisionBitMask = bordersCategory;
+    
+    return waterNode;
+}
+
+- (SKSpriteNode *)createHamburger {
+
+    SKSpriteNode *hamburgerNode = [SKSpriteNode spriteNodeWithImageNamed:@"hamburger64.png"];
+    hamburgerNode.zPosition = 2;
+    hamburgerNode.anchorPoint = CGPointMake(0.5, 0.5);
+    
+    hamburgerNode.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius: hamburgerNode.size.width / 2];
+    hamburgerNode.physicsBody.affectedByGravity = NO;
+    hamburgerNode.physicsBody.allowsRotation = YES;
+    hamburgerNode.physicsBody.restitution = 0.0;
+    hamburgerNode.physicsBody.friction = 0.0;
+    hamburgerNode.physicsBody.dynamic = YES;
+    
+    hamburgerNode.physicsBody.categoryBitMask = itemsCategory;
+    hamburgerNode.physicsBody.contactTestBitMask = runnersCategory;
+    hamburgerNode.physicsBody.collisionBitMask = bordersCategory;
+    
+    return hamburgerNode;
 }
 
 #pragma mark --- GAME LOGIC
@@ -378,7 +438,6 @@ static const uint32_t bordersCategory =  0x1 << 3;
                                         duration:runnerChangeDirectionDuration];
             break;
     }
-    
     [runner runAction:runnerMoveAction];
 }
 
@@ -465,29 +524,25 @@ static const uint32_t bordersCategory =  0x1 << 3;
     if ([node.name isEqualToString:@"bananaButton"]) {
         [self fadeInFadeOutNode:node];
         selectedItem = mamaSelectedItemBanana;
-        NSLog(@"\n\nselectedItem = %ld\n\n", selectedItem);
         
     } else if ([node.name isEqualToString:@"oilButton"]) {
         [self fadeInFadeOutNode:node];
         selectedItem = mamaSelectedItemOil;
-        NSLog(@"\n\nselectedItem = %ld\n\n", selectedItem);
         
     } else if ([node.name isEqualToString:@"waterButton"]) {
         [self fadeInFadeOutNode:node];
         selectedItem = mamaSelectedItemWater;
-        NSLog(@"\n\nselectedItem = %ld\n\n", selectedItem);
         
     } else if ([node.name isEqualToString:@"hamburgerButton"]) {
         [self fadeInFadeOutNode:node];
         selectedItem = mamaSelectedItemHamburger;
-        NSLog(@"\n\nselectedItem = %ld\n\n", selectedItem);
     
     } else if ((selectedItem > 0) &&
                (([node.name isEqualToString:@"first background"]) ||
                 ([node.name isEqualToString:@"second background"]) ||
                 ([node.name isEqualToString:@"third background"]))) {
     
-        NSLog(@"\n\nPlayer touched one of the background nodes\n\n");
+        NSLog(@"\n\nPlayer selected item and touched one of the background nodes\n\n");
         [self mamaWillThrowSelectedItemToXPosition: location.x];
     } else {
         NSLog(@"Just usual touch. Nothing will happen");
@@ -518,8 +573,14 @@ static const uint32_t bordersCategory =  0x1 << 3;
         case mamaSelectedItemBanana:
             itemToThrow = [self createBanana];
             break;
-            
-        default:
+        case mamaSelectedItemOil:
+            itemToThrow = [self createOil];
+            break;
+        case mamaSelectedItemWater:
+            itemToThrow = [self createWater];
+            break;
+        case mamaSelectedItemHamburger:
+            itemToThrow = [self createHamburger];
             break;
     }
     
