@@ -9,6 +9,13 @@
 #import "GameScene.h"
 #import "Background.h"
 
+typedef NS_ENUM(NSUInteger, mamaSelectedItem) {
+    mamaSelectedItemBanana = 1,
+    mamaSelectedItemOil = 2,
+    mamaSelectedItemWater = 3,
+    mamaSelectedItemHamburger = 4
+};
+
 //Physics bodies collisions and contact bitMasks
 static const uint32_t pickupWithMamaCategory =  0x1 << 0;
 static const uint32_t runnersCategory =  0x1 << 1;
@@ -55,6 +62,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     BOOL _mamaThrewItem;
     SKNode *_mamaPushedButton;
+    mamaSelectedItem selectedItem;
 }
 
 - (void)didMoveToView:(SKView *)view {
@@ -72,12 +80,12 @@ static const uint32_t bordersCategory =  0x1 << 3;
     _mamaThrewItem = NO;
     _mamaPushedButton = nil;
     
+    //добавляем объекты на сцену
     [self addRunners];
     [self addHUD];
     [self addBackgrounds];
     [self addBorders];
     [self addPickupWithMama];
-    [self createItems];
 }
 
 #pragma mark - Add objects on scene
@@ -309,7 +317,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
     [_runnersArray[5] runAction:[SKAction repeatActionForever:sonAnimationAction]];
 }
 
-- (void)createItems {
+- (SKSpriteNode *)createBanana {
 
     SKSpriteNode *bananaNode = [SKSpriteNode spriteNodeWithImageNamed:@"banana32.png"];
     bananaNode.zPosition = 2;
@@ -326,8 +334,8 @@ static const uint32_t bordersCategory =  0x1 << 3;
     bananaNode.physicsBody.contactTestBitMask = runnersCategory;
     bananaNode.physicsBody.collisionBitMask = bordersCategory;
     
-    bananaNode = _bananaItem;
-    //осталось добавить на вьюху и указать position
+    return bananaNode;
+#warning Добавить методы для остальных items : oil, water, hamburger
 }
 
 #pragma mark --- GAME LOGIC
@@ -456,16 +464,33 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     if ([node.name isEqualToString:@"bananaButton"]) {
         [self fadeInFadeOutNode:node];
+        selectedItem = mamaSelectedItemBanana;
+        NSLog(@"\n\nselectedItem = %ld\n\n", selectedItem);
+        
     } else if ([node.name isEqualToString:@"oilButton"]) {
         [self fadeInFadeOutNode:node];
+        selectedItem = mamaSelectedItemOil;
+        NSLog(@"\n\nselectedItem = %ld\n\n", selectedItem);
+        
     } else if ([node.name isEqualToString:@"waterButton"]) {
         [self fadeInFadeOutNode:node];
+        selectedItem = mamaSelectedItemWater;
+        NSLog(@"\n\nselectedItem = %ld\n\n", selectedItem);
+        
     } else if ([node.name isEqualToString:@"hamburgerButton"]) {
         [self fadeInFadeOutNode:node];
+        selectedItem = mamaSelectedItemHamburger;
+        NSLog(@"\n\nselectedItem = %ld\n\n", selectedItem);
     
-    } else if (([node.name isEqualToString:@"first background"]) || ([node.name isEqualToString:@"second background"]) || ([node.name isEqualToString:@"third background"])) {
+    } else if ((selectedItem > 0) &&
+               (([node.name isEqualToString:@"first background"]) ||
+                ([node.name isEqualToString:@"second background"]) ||
+                ([node.name isEqualToString:@"third background"]))) {
     
         NSLog(@"\n\nPlayer touched one of the background nodes\n\n");
+        [self mamaWillThrowSelectedItemToXPosition: location.x];
+    } else {
+        NSLog(@"Just usual touch. Nothing will happen");
     }
 }
 
@@ -483,6 +508,23 @@ static const uint32_t bordersCategory =  0x1 << 3;
         _mamaPushedButton = node;
         [node runAction:fadeOutAction];
     }
+}
+
+- (void)mamaWillThrowSelectedItemToXPosition: (CGFloat)xPosition {
+
+    SKSpriteNode *itemToThrow = [[SKSpriteNode alloc]init];
+    
+    switch (selectedItem) {
+        case mamaSelectedItemBanana:
+            itemToThrow = [self createBanana];
+            break;
+            
+        default:
+            break;
+    }
+    
+    itemToThrow.position = CGPointMake(xPosition, screenHeight / 2);
+    [self addChild:itemToThrow];
 }
 
 #pragma mark - CONTACT DELEGATE
