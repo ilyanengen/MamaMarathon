@@ -22,6 +22,9 @@ static const uint32_t runnersCategory =  0x1 << 1;
 static const uint32_t itemsCategory =  0x1 << 2;
 static const uint32_t bordersCategory =  0x1 << 3;
 
+static const NSTimeInterval runnerAnimationDuration = 0.18;
+static const NSTimeInterval sonAnimationDuration = 0.25;
+
 @implementation GameScene {
     
     //screen size
@@ -260,13 +263,13 @@ static const uint32_t bordersCategory =  0x1 << 3;
     SKTexture *runnerTexture1 = [SKTexture textureWithImageNamed:@"runner1.png"];
     SKTexture *runnerTexture2 = [SKTexture textureWithImageNamed:@"runner2.png"];
     NSArray *runnerTextures = [NSArray arrayWithObjects:runnerTexture1,runnerTexture2, nil];
-    SKAction *runnerAnimationAction = [SKAction animateWithTextures:runnerTextures timePerFrame:0.1];
+    SKAction *runnerAnimationAction = [SKAction animateWithTextures:runnerTextures timePerFrame:runnerAnimationDuration];
     
     //создаем анимацию для сыночка
     SKTexture *sonTexture1 = [SKTexture textureWithImageNamed:@"son1.png"];
     SKTexture *sonTexture2 = [SKTexture textureWithImageNamed:@"son2.png"];
     NSArray *sonTextures = [NSArray arrayWithObjects:sonTexture1,sonTexture2, nil];
-    SKAction *sonAnimationAction = [SKAction animateWithTextures:sonTextures timePerFrame:0.2];
+    SKAction *sonAnimationAction = [SKAction animateWithTextures:sonTextures timePerFrame:sonAnimationDuration];
     
     //создаем бегунов и добавляем в массив
     for (int i; i < 10; i++) {
@@ -622,40 +625,79 @@ static const uint32_t bordersCategory =  0x1 << 3;
     
     NSLog(@"\n\nCONTACT DELEGATE!!!!Body A: %@  Body B: %@\n\n",bodyANode.name, bodyBNode.name);
     
-    
     //BANANA VS RUNNER
     if ([bodyANode.name isEqualToString:@"runner"] && [bodyBNode.name isEqualToString:@"banana"]) {
     
-        [self fallDownOfRunner:bodyANode andBanana:bodyBNode];
+        [self fallDownOfRunner:bodyANode andItem:bodyBNode];
+    }else if ([bodyANode.name isEqualToString:@"banana"] && [bodyBNode.name isEqualToString:@"runner"]) {
+        
+        [self fallDownOfRunner:bodyBNode andItem:bodyANode];
+    } else if ([bodyANode.name isEqualToString:@"son"] && [bodyBNode.name isEqualToString:@"banana"]) {
+    
+        [self fallDownOfRunner:bodyANode andItem:bodyBNode];
+    } else if ([bodyANode.name isEqualToString:@"banana"] && [bodyBNode.name isEqualToString:@"son"]) {
+    
+        [self fallDownOfRunner:bodyBNode andItem:bodyANode];
     }
     
-    else if ([bodyANode.name isEqualToString:@"banana"] && [bodyBNode.name isEqualToString:@"runner"]) {
+    //OIL VS RUNNER
+    if ([bodyANode.name isEqualToString:@"runner"] && [bodyBNode.name isEqualToString:@"oil"]) {
         
+        [self fallDownOfRunner:bodyANode andItem:bodyBNode];
+    }else if ([bodyANode.name isEqualToString:@"oil"] && [bodyBNode.name isEqualToString:@"runner"]) {
         
+        [self fallDownOfRunner:bodyBNode andItem:bodyANode];
+    } else if ([bodyANode.name isEqualToString:@"son"] && [bodyBNode.name isEqualToString:@"oil"]) {
         
-    } else if (([bodyANode.name isEqualToString:@"son"] && [bodyBNode.name isEqualToString:@"banana"]) ||
-               ([bodyANode.name isEqualToString:@"banana"] && [bodyBNode.name isEqualToString:@"son"])) {
-    
+        [self fallDownOfRunner:bodyANode andItem:bodyBNode];
+    } else if ([bodyANode.name isEqualToString:@"oil"] && [bodyBNode.name isEqualToString:@"son"]) {
         
+        [self fallDownOfRunner:bodyBNode andItem:bodyANode];
     }
 
+    
+    
+    
+    
 }
 
--(void)fallDownOfRunner: (SKNode*) runner andBanana: (SKNode *)banana {
+#pragma mark - Contact consequences
+- (void)fallDownOfRunner: (SKNode*) runner andItem: (SKNode *)item {
 
-    SKAction *changeTexture = [SKAction setTexture:[SKTexture textureWithImageNamed:@"runner3.png"]];
-    SKAction *moveUp = [SKAction moveByX:0 y:screenCell.height * 2 duration:screenCell.height * 2 / _backgroundMoveSpeed];
+    if ([runner.name isEqualToString:@"runner"]) {
     
-    SKTexture *runnerTexture1 = [SKTexture textureWithImageNamed:@"runner1.png"];
-    SKTexture *runnerTexture2 = [SKTexture textureWithImageNamed:@"runner2.png"];
-    NSArray *runnerTextures = [NSArray arrayWithObjects:runnerTexture1,runnerTexture2, nil];
-    SKAction *runnerAnimationAction = [SKAction animateWithTextures:runnerTextures timePerFrame:0.1];
+        SKAction *changeTexture = [SKAction setTexture:[SKTexture textureWithImageNamed:@"runner3.png"]];
+        SKAction *moveUp = [SKAction moveByX:0 y:screenCell.height * 2 duration:screenCell.height * 2 / _backgroundMoveSpeed];
+        
+        SKTexture *runnerTexture1 = [SKTexture textureWithImageNamed:@"runner1.png"];
+        SKTexture *runnerTexture2 = [SKTexture textureWithImageNamed:@"runner2.png"];
+        NSArray *runnerTextures = [NSArray arrayWithObjects:runnerTexture1,runnerTexture2, nil];
+        SKAction *runnerAnimationAction = [SKAction animateWithTextures:runnerTextures timePerFrame:runnerAnimationDuration];
+        
+        NSArray *sequenceOfActionsOfRunner = @[changeTexture, moveUp, runnerAnimationAction];
+        
+        [item removeFromParent];//удаляем айтем с вьюхи
+        [runner runAction:[SKAction sequence:sequenceOfActionsOfRunner]];
+        
+    } else if ([runner.name isEqualToString:@"son"]){
     
-    NSArray *sequenceOfActionsOfRunner = @[changeTexture, moveUp, runnerAnimationAction];
-    
-    [banana removeFromParent];//удаляем банан с вьюхи
-    [runner runAction:[SKAction sequence:sequenceOfActionsOfRunner]];
+        SKAction *changeTexture = [SKAction setTexture:[SKTexture textureWithImageNamed:@"son3.png"]];
+        SKAction *moveUp = [SKAction moveByX:0 y:screenCell.height * 2 duration:screenCell.height * 2 / _backgroundMoveSpeed];
+        
+        SKTexture *runnerTexture1 = [SKTexture textureWithImageNamed:@"son1.png"];
+        SKTexture *runnerTexture2 = [SKTexture textureWithImageNamed:@"son2.png"];
+        NSArray *runnerTextures = [NSArray arrayWithObjects:runnerTexture1,runnerTexture2, nil];
+        SKAction *runnerAnimationAction = [SKAction animateWithTextures:runnerTextures timePerFrame:sonAnimationDuration];
+        
+        NSArray *sequenceOfActionsOfRunner = @[changeTexture, moveUp, runnerAnimationAction];
+        
+        [item removeFromParent];//удаляем айтем с вьюхи
+        [runner runAction:[SKAction sequence:sequenceOfActionsOfRunner]];
+    } else {
+        NSLog(@"ERROR! runner.name is strange!");
+    }
 }
+               
 
 
 @end
