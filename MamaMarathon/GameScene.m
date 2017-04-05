@@ -60,11 +60,13 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     NSInteger _iterationCount; //+1 on every 3rd background
     
     BOOL _mamaThrewItem;
+    BOOL _gameIsOver;
     SKNode *_mamaPushedButton;
     mamaSelectedItem selectedItem;
 #warning ИСПОЛЬЗОВАТЬ ЭТИ айвары чтобы запрограммировать поведение бегунов
     SKSpriteNode *_runnersShouldAvoidItem;
     SKSpriteNode *_runnersShouldCatchItem;
+    
 }
 
 - (void)didMoveToView:(SKView *)view {
@@ -83,6 +85,7 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     //устанавливаем начальный статус
     _mamaThrewItem = NO;
     _mamaPushedButton = nil;
+    _gameIsOver = NO;
     
     //добавляем объекты на сцену
     [self addRunners];
@@ -469,13 +472,13 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
         for (SKSpriteNode *runner in _runnersArray) {
             [self changeDirectionOfrunner:runner];
             
-            if ((![runner.name isEqualToString:@"son"]) && (runner.position.y < -screenCell.height * 1.5)) {
+            if ((![runner.name isEqualToString:@"son"]) && (runner.position.y < -screenCell.height * 1.5) && (!_gameIsOver)) {
                 [self gameOver];
             }
     }
     
     //Если сынок ушел за экран сверху -gameOver
-    if ((_son != nil) && (_son.position.y > screenHeight + _son.size.height * 1.5)) {
+    if ((_son != nil) && (_son.position.y > screenHeight + _son.size.height * 1.2) && (!_gameIsOver)) {
         [self gameOver];
     }
 
@@ -777,6 +780,18 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
 - (void)gameOver {
 
     NSLog(@"\n\n\nGAME OVER!\n\n\n");
+    [self removeAllChildren];
+    
+    [self setBackgroundColor:[SKColor blackColor]];
+    
+    NSString *gameOverString = @"GAME OVER";
+    SKLabelNode *gameOverLabel = [SKLabelNode labelNodeWithFontNamed:@"San Francisco"];
+    gameOverLabel.text = gameOverString;
+    gameOverLabel.fontColor = [SKColor whiteColor];
+    gameOverLabel.fontSize = 30;
+    gameOverLabel.zPosition = 100;
+    gameOverLabel.position = CGPointMake(screenWidth / 2, screenHeight / 2);
+    [self addChild:gameOverLabel];
 }
 
 @end
