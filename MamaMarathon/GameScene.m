@@ -655,14 +655,41 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
         [self fallDownOfRunner:bodyBNode andItem:bodyANode];
     }
 
-    
-    
-    
+    //WATER VS RUNNER
+    if ([bodyANode.name isEqualToString:@"runner"] && [bodyBNode.name isEqualToString:@"water"]) {
+        
+        [self luckyRunner:bodyANode catchesItem:bodyBNode];
+    }else if ([bodyANode.name isEqualToString:@"water"] && [bodyBNode.name isEqualToString:@"runner"]) {
+        
+        [self luckyRunner:bodyBNode catchesItem:bodyANode];
+    } else if ([bodyANode.name isEqualToString:@"son"] && [bodyBNode.name isEqualToString:@"water"]) {
+        
+        [self luckyRunner:bodyANode catchesItem:bodyBNode];
+    } else if ([bodyANode.name isEqualToString:@"water"] && [bodyBNode.name isEqualToString:@"son"]) {
+        
+        [self luckyRunner:bodyBNode catchesItem:bodyANode];
+    }
+
+    //HAMBURGER VS PLAYER
+    if ([bodyANode.name isEqualToString:@"runner"] && [bodyBNode.name isEqualToString:@"hamburger"]) {
+        
+        [self luckyRunner:bodyANode catchesItem:bodyBNode];
+    }else if ([bodyANode.name isEqualToString:@"hamburger"] && [bodyBNode.name isEqualToString:@"runner"]) {
+        
+        [self luckyRunner:bodyBNode catchesItem:bodyANode];
+    } else if ([bodyANode.name isEqualToString:@"son"] && [bodyBNode.name isEqualToString:@"hamburger"]) {
+        
+        [self luckyRunner:bodyANode catchesItem:bodyBNode];
+    } else if ([bodyANode.name isEqualToString:@"hamburger"] && [bodyBNode.name isEqualToString:@"son"]) {
+        
+        [self luckyRunner:bodyBNode catchesItem:bodyANode];
+    }
+
     
 }
 
 #pragma mark - Contact consequences
-- (void)fallDownOfRunner: (SKNode*) runner andItem: (SKNode *)item {
+- (void)fallDownOfRunner: (SKNode *) runner andItem: (SKNode *)item {
 
     if ([runner.name isEqualToString:@"runner"]) {
     
@@ -698,6 +725,50 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     }
 }
                
+- (void)luckyRunner: (SKNode *)runner catchesItem: (SKNode *)item {
 
+    if ([runner.name isEqualToString:@"runner"]) {
+        
+        SKAction *moveDown = [[SKAction alloc]init];
+        
+        if ([item.name isEqualToString:@"hamburger"]) {
+            moveDown = [SKAction moveByX:0 y:-screenCell.height duration:screenCell.height / _backgroundMoveSpeed];
+        }else {
+            moveDown = [SKAction moveByX:0 y:-screenCell.height / 2 duration:screenCell.height / _backgroundMoveSpeed];
+        }
+        
+        SKTexture *runnerTexture1 = [SKTexture textureWithImageNamed:@"runner1.png"];
+        SKTexture *runnerTexture2 = [SKTexture textureWithImageNamed:@"runner2.png"];
+        NSArray *runnerTextures = [NSArray arrayWithObjects:runnerTexture1,runnerTexture2, nil];
+        SKAction *runnerAnimationAction = [SKAction animateWithTextures:runnerTextures timePerFrame:runnerAnimationDuration];
+        
+        NSArray *groupOfActionsOfRunner = @[moveDown, runnerAnimationAction];
+        
+        [item removeFromParent];//удаляем айтем с вьюхи
+        [runner runAction:[SKAction group:groupOfActionsOfRunner]];
+        
+    } else if ([runner.name isEqualToString:@"son"]){
+        
+        SKAction *moveDown = [[SKAction alloc]init];
+        
+        if ([item.name isEqualToString:@"hamburger"]) {
+            moveDown = [SKAction moveByX:0 y:-screenCell.height duration:screenCell.height / _backgroundMoveSpeed];
+        }else {
+            moveDown = [SKAction moveByX:0 y:-screenCell.height / 2 duration:screenCell.height / _backgroundMoveSpeed];
+        }
+        
+        SKTexture *runnerTexture1 = [SKTexture textureWithImageNamed:@"son1.png"];
+        SKTexture *runnerTexture2 = [SKTexture textureWithImageNamed:@"son2.png"];
+        NSArray *runnerTextures = [NSArray arrayWithObjects:runnerTexture1,runnerTexture2, nil];
+        SKAction *runnerAnimationAction = [SKAction animateWithTextures:runnerTextures timePerFrame:sonAnimationDuration];
+        
+        NSArray *groupOfActionsOfRunner = @[moveDown, runnerAnimationAction];
+        
+        [item removeFromParent];//удаляем айтем с вьюхи
+        [runner runAction:[SKAction group:groupOfActionsOfRunner]];
+    } else {
+        NSLog(@"ERROR! runner.name is strange!");
+    }
+}
 
 @end
