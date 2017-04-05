@@ -44,6 +44,7 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     
     //Objects
     SKSpriteNode *_pickupWithMama;
+    SKSpriteNode *_son;
     NSMutableArray *_runnersArray;
     
     //HUD
@@ -319,6 +320,7 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     //Выделяем сыночка из остальных бегунов
     [_runnersArray[5] setName:@"son"];
     [_runnersArray[5] runAction:[SKAction repeatActionForever:sonAnimationAction]];
+    _son = _runnersArray[5];
 }
 
 #pragma mark - ITEMS OF MAMA
@@ -463,17 +465,18 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
         _lastUpdateTimeInterval = currentTime;
     }
 
-    //Если мама ничего не кинула, то бегуны бегают в рандомных направлениях, если мама что-то кинула - все бегуны разбегаются от айтема
-    if (!_mamaThrewItem) {
-        //NSLog(@"Runners are running in random directions");
+    //Бегуны бегают в рандомных направлениях
         for (SKSpriteNode *runner in _runnersArray) {
             [self changeDirectionOfrunner:runner];
-        }
-    } else {
-        NSLog(@"Runners are going from the item!");
-        //for (SKSpriteNode *runner in _runnersArray) {
-        //  [self runnersGoAwayFromItem:runner itemPosition:_mamaThrownItem.position];
-        //}
+            
+            if ((![runner.name isEqualToString:@"son"]) && (runner.position.y < -screenCell.height * 1.5)) {
+                [self gameOver];
+            }
+    }
+    
+    //Если сынок ушел за экран сверху -gameOver
+    if ((_son != nil) && (_son.position.y > screenHeight + _son.size.height * 1.5)) {
+        [self gameOver];
     }
 
     //BACKGROUND MOVEMENT
@@ -769,6 +772,11 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     } else {
         NSLog(@"ERROR! runner.name is strange!");
     }
+}
+
+- (void)gameOver {
+
+    NSLog(@"\n\n\nGAME OVER!\n\n\n");
 }
 
 @end
