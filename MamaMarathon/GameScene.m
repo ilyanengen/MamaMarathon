@@ -63,10 +63,6 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     BOOL _gameIsOver;
     SKNode *_mamaPushedButton;
     mamaSelectedItem selectedItem;
-#warning ИСПОЛЬЗОВАТЬ ЭТИ айвары чтобы запрограммировать поведение бегунов
-    SKSpriteNode *_runnersShouldAvoidItem;
-    SKSpriteNode *_runnersShouldCatchItem;
-    
 }
 
 - (void)didMoveToView:(SKView *)view {
@@ -607,14 +603,6 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     //Throw Animation Action
     SKAction *throwAction = [SKAction moveTo:endPosition duration:0.5];
     [itemToThrow runAction:throwAction];
-
-#warning Потестить! Поведение бегунов ---- дописать в методе update!!!
-    //назначаем айвары, на которые будут реагировать бегуны
-    if (([itemToThrow.name isEqualToString:@"banana"]) || ([itemToThrow.name isEqualToString:@"oil"]))  {
-        _runnersShouldAvoidItem = itemToThrow;
-    } else if (([itemToThrow.name isEqualToString:@"water"]) || ([itemToThrow.name isEqualToString:@"hamburger"])) {
-        _runnersShouldCatchItem = itemToThrow;
-    }
     
     //Going to Upper edge of screen
     NSTimeInterval timeInterval = (double)(screenHeight * 1.5 / _backgroundMoveSpeed);
