@@ -384,7 +384,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
 
 - (SKSpriteNode *)createHamburger {
 
-    SKSpriteNode *hamburgerNode = [SKSpriteNode spriteNodeWithImageNamed:@"hamburger64.png"];
+    SKSpriteNode *hamburgerNode = [SKSpriteNode spriteNodeWithImageNamed:@"hamburger32.png"];
     hamburgerNode.name = @"hamburger";
     hamburgerNode.zPosition = 2;
     hamburgerNode.anchorPoint = CGPointMake(0.5, 0.5);
