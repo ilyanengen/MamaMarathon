@@ -620,18 +620,41 @@ static const uint32_t bordersCategory =  0x1 << 3;
     SKNode *bodyANode = contact.bodyA.node;
     SKNode *bodyBNode = contact.bodyB.node;
     
-    NSLog(@"Body A: %@  Body B: %@",bodyANode.name, bodyBNode.name);
-      NSLog(@"\n\nCONTACT DELEGATE!!!!\n\n");
+    NSLog(@"\n\nCONTACT DELEGATE!!!!Body A: %@  Body B: %@\n\n",bodyANode.name, bodyBNode.name);
     
-    /*if ([bodyANode.name isEqualToString:@"runner"] && [bodyBNode.name isEqualToString:@"runner"] ){
-        
-        NSLog(@"\n\nCONTACT DELEGATE!!!!\n\n");
-        
-    } else if ([bodyBNode.name isEqualToString:@"runner"] && [bodyANode.name isEqualToString:@"runner"]) {
     
-        NSLog(@"\n\nCONTACT DELEGATE!!!!\n\n");
+    //BANANA VS RUNNER
+    if ([bodyANode.name isEqualToString:@"runner"] && [bodyBNode.name isEqualToString:@"banana"]) {
+    
+        [self fallDownOfRunner:bodyANode andBanana:bodyBNode];
     }
-     */
+    
+    else if ([bodyANode.name isEqualToString:@"banana"] && [bodyBNode.name isEqualToString:@"runner"]) {
+        
+        
+        
+    } else if (([bodyANode.name isEqualToString:@"son"] && [bodyBNode.name isEqualToString:@"banana"]) ||
+               ([bodyANode.name isEqualToString:@"banana"] && [bodyBNode.name isEqualToString:@"son"])) {
+    
+        
+    }
+
+}
+
+-(void)fallDownOfRunner: (SKNode*) runner andBanana: (SKNode *)banana {
+
+    SKAction *changeTexture = [SKAction setTexture:[SKTexture textureWithImageNamed:@"runner3.png"]];
+    SKAction *moveUp = [SKAction moveByX:0 y:screenCell.height * 2 duration:screenCell.height * 2 / _backgroundMoveSpeed];
+    
+    SKTexture *runnerTexture1 = [SKTexture textureWithImageNamed:@"runner1.png"];
+    SKTexture *runnerTexture2 = [SKTexture textureWithImageNamed:@"runner2.png"];
+    NSArray *runnerTextures = [NSArray arrayWithObjects:runnerTexture1,runnerTexture2, nil];
+    SKAction *runnerAnimationAction = [SKAction animateWithTextures:runnerTextures timePerFrame:0.1];
+    
+    NSArray *sequenceOfActionsOfRunner = @[changeTexture, moveUp, runnerAnimationAction];
+    
+    [banana removeFromParent];//удаляем банан с вьюхи
+    [runner runAction:[SKAction sequence:sequenceOfActionsOfRunner]];
 }
 
 
