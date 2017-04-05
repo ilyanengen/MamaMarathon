@@ -243,7 +243,7 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     pickup.physicsBody.allowsRotation = NO;
     pickup.physicsBody.restitution = 0.0;
     pickup.physicsBody.friction = 0.0;
-    pickup.physicsBody.dynamic = YES;
+    pickup.physicsBody.dynamic = NO;
     
     pickup.physicsBody.categoryBitMask = pickupWithMamaCategory;
     pickup.physicsBody.collisionBitMask = runnersCategory | bordersCategory;
@@ -472,7 +472,8 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
         for (SKSpriteNode *runner in _runnersArray) {
             [self changeDirectionOfrunner:runner];
             
-            if ((![runner.name isEqualToString:@"son"]) && (runner.position.y < -screenCell.height * 1.5) && (!_gameIsOver)) {
+            //условия GameOver'a
+            if ((![runner.name isEqualToString:@"son"]) && (runner.position.y < _pickupWithMama.position.y) && (!_gameIsOver)) {
                 [self gameOver];
             }
     }
@@ -779,10 +780,9 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
 
 - (void)gameOver {
 
+    _gameIsOver = YES;
     NSLog(@"\n\n\nGAME OVER!\n\n\n");
     [self removeAllChildren];
-    
-    [self setBackgroundColor:[SKColor blackColor]];
     
     NSString *gameOverString = @"GAME OVER";
     SKLabelNode *gameOverLabel = [SKLabelNode labelNodeWithFontNamed:@"San Francisco"];
@@ -791,6 +791,7 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     gameOverLabel.fontSize = 30;
     gameOverLabel.zPosition = 100;
     gameOverLabel.position = CGPointMake(screenWidth / 2, screenHeight / 2);
+    
     [self addChild:gameOverLabel];
 }
 
