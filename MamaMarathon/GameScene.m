@@ -439,9 +439,9 @@ static const NSInteger numberOfIterationsToFinish = 70;
     
     switch (randomNumber) {
         case 0:
-            //NSLog(@"change direction of runner: UP");
-            runnerMoveAction = [SKAction moveByX:0
-                                               y:+screenCell.height/10
+            //NSLog(@"change direction of runner: LEFT");
+            runnerMoveAction = [SKAction moveByX:-screenCell.width/10
+                                               y:0
                                         duration:runnerChangeDirectionDuration];
             break;
         case 1:
@@ -457,13 +457,45 @@ static const NSInteger numberOfIterationsToFinish = 70;
                                         duration:runnerChangeDirectionDuration];
             break;
         case 3:
-            //NSLog(@"change direction of runner: LEFT");
-            runnerMoveAction = [SKAction moveByX:-screenCell.width/10
-                                               y:0
+            //NSLog(@"change direction of runner: UP");
+            runnerMoveAction = [SKAction moveByX:0
+                                               y:+screenCell.height/10
                                         duration:runnerChangeDirectionDuration];
             break;
     }
     [runner runAction:runnerMoveAction];
+    
+    //чтобы сынок не убегал вниз за экран
+    if ((runner.position.y <= _pickupWithMama.position.y + runner.size.height)&&([runner.name isEqualToString:@"son"])) {
+        
+        SKAction *sonMoveAction = [[SKAction alloc]init];
+        
+        NSLog(@"LET'S PREVENT A SON FROM GOING DOWN!");
+        
+        int randomNumber = arc4random_uniform(3);//будет рандомное значение 0, 1, 2
+        
+        switch (randomNumber) {
+            case 0:
+                //NSLog(@"change direction of runner: LEFT");
+                sonMoveAction = [SKAction moveByX:-screenCell.width/10
+                                                   y:0
+                                            duration:runnerChangeDirectionDuration];
+                break;
+            case 1:
+                //NSLog(@"change direction of runner: RIGHT");
+                sonMoveAction = [SKAction moveByX:+screenCell.width/10
+                                                   y:0
+                                            duration:runnerChangeDirectionDuration];
+                break;
+            case 2:
+                //NSLog(@"change direction of runner: DOWN");
+                sonMoveAction = [SKAction moveByX:0
+                                                   y:-screenCell.height/10
+                                            duration:runnerChangeDirectionDuration];
+                break;
+        }
+        [_son runAction:runnerMoveAction];
+    }
 }
 
 #pragma mark --- UPDATE METHOD
