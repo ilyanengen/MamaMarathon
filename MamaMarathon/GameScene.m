@@ -24,6 +24,7 @@ static const uint32_t bordersCategory =  0x1 << 3;
 
 static const NSTimeInterval runnerAnimationDuration = 0.18;
 static const NSTimeInterval sonAnimationDuration = 0.25;
+static const NSInteger numberOfIterationsToFinish = 70;
 
 @implementation GameScene {
     
@@ -49,6 +50,8 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     
     //HUD
     SKSpriteNode *_itemsBar;
+    SKSpriteNode *_runningManIcon;
+    CGFloat distancePoint;
     //Buttons
     SKSpriteNode *_bananaButton;
     SKSpriteNode *_oilButton;
@@ -119,6 +122,17 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     distanceBar.position = CGPointMake(0, _itemsBar.size.height);
     distanceBar.zPosition = 11;
     [HUDnode addChild:distanceBar];
+    
+    SKSpriteNode *icon = [SKSpriteNode spriteNodeWithImageNamed:@"run.png"];
+    icon.zPosition = 12;
+    icon.anchorPoint = CGPointMake(0.5, 0.5);
+    icon.size = CGSizeMake(distanceBar.size.height, distanceBar.size.height);
+    icon.position = CGPointMake(distanceBar.size.height / 2, distanceBar.size.height / 2);
+    _runningManIcon = icon;
+    [distanceBar addChild:_runningManIcon];
+    
+    //Вычисляем расстояние, которое проходит иконка за одну итерацию
+    distancePoint = distanceBar.size.width / numberOfIterationsToFinish;
     
     //BUTTONS on itemsBar
     [self addButtons];
@@ -412,6 +426,8 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
 
     _iterationCount = _iterationCount + 1;
     NSLog(@"iteration count = %ld", _iterationCount);
+    
+    _runningManIcon.position = CGPointMake(_runningManIcon.position.x + distancePoint, _runningManIcon.position.y);
 }
 
 - (void)changeDirectionOfrunner: (SKSpriteNode*)runner {
@@ -523,6 +539,12 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
             //+1 to iterationCounter
             [self iterationCounterPlusOne];
         }}];
+    
+    //Условия победы
+    if ((_iterationCount >= numberOfIterationsToFinish) && (!_gameIsOver)) {
+        
+        [self youWin];
+    }
 }
 
 #pragma mark - TOUCHES
@@ -781,6 +803,28 @@ static const NSTimeInterval sonAnimationDuration = 0.25;
     gameOverLabel.position = CGPointMake(screenWidth / 2, screenHeight / 2);
     
     [self addChild:gameOverLabel];
+}
+
+- (void)youWin {
+
+    NSLog(@"\n\nYOU WIN!\n\n");
+    [self removeAllChildren];
+    
+    SKSpriteNode *finishNode= [SKSpriteNode spriteNodeWithImageNamed:@"finish.jpg"];
+    finishNode.anchorPoint = CGPointMake(0.5, 0.5);
+    finishNode.position = CGPointMake(screenWidth/2, screenHeight/2);
+    finishNode.zPosition = 1;
+    [self addChild:finishNode];
+    
+    NSString *youWinString = @"YOU WIN!";
+    SKLabelNode *youWinLabel = [SKLabelNode labelNodeWithFontNamed:@"San Francisco"];
+    youWinLabel.text = youWinString;
+    youWinLabel.fontColor = [SKColor whiteColor];
+    youWinLabel.fontSize = 30;
+    youWinLabel.zPosition = 2;
+    youWinLabel.position = CGPointMake(screenWidth / 2, screenHeight / 2);
+    [self addChild:youWinLabel];
+
 }
 
 @end
